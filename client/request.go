@@ -116,9 +116,9 @@ func (r *Request) logResponseInfo(b []byte, start time.Time, res *http.Response)
 	if !r.HideLogResponse {
 		bodySuffix := "..."
 		bodyLen := r.MaxLogResponseBody
-		if bodyLen == -1 || bodyLen >= len(r.body) {
+		if bodyLen == -1 || bodyLen >= len(b) {
 			bodySuffix = ""
-			bodyLen = len(r.body)
+			bodyLen = len(b)
 		}
 
 		logx.WithID(r.XRequestID).WithFields(logrus.Fields{

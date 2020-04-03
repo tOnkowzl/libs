@@ -18,10 +18,12 @@ type Request struct {
 	Body       interface{}
 	Header     Header
 
-	HideLogRequest      bool
-	HideLogResponse     bool
-	HideLogRequestBody  bool
-	HideLogResponseBody bool
+	HideLogRequest  bool
+	HideLogResponse bool
+
+	// -1 log all
+	MaxLogRequestBody  int
+	MaxLogResponseBody int
 
 	fullURL    string
 	body       []byte
@@ -33,10 +35,6 @@ func (r *Request) init(baseURL string) {
 	r.initFullURL(baseURL)
 	r.newMarshaller()
 	r.initRequireHeaders()
-}
-
-func (r *Request) bodyString() string {
-	return string(r.body)
 }
 
 func (r *Request) marshalBody() error {
@@ -98,15 +96,15 @@ func (r *Request) initFullURL(baseurl string) {
 
 func (r *Request) logRequestInfo() {
 	if !r.HideLogRequest {
-		body := r.bodyString()
-		if r.HideLogRequestBody {
-			body = ""
+		bodyLen := r.MaxLogRequestBody
+		if bodyLen == -1 || bodyLen > len(r.body) {
+			bodyLen = len(r.body)
 		}
 
 		logx.WithID(r.XRequestID).WithFields(logrus.Fields{
 			"method": r.Method,
 			"url":    r.fullURL,
-			"body":   body,
+			"body":   string(r.body[:bodyLen]),
 			"header": r.Header,
 		}).Info("client do request info")
 	}
@@ -114,16 +112,16 @@ func (r *Request) logRequestInfo() {
 
 func (r *Request) logResponseInfo(b []byte, start time.Time, res *http.Response) {
 	if !r.HideLogResponse {
-		body := string(b)
-		if r.HideLogResponseBody {
-			body = ""
+		bodyLen := r.MaxLogResponseBody
+		if bodyLen == -1 || bodyLen > len(r.body) {
+			bodyLen = len(r.body)
 		}
 
 		logx.WithID(r.XRequestID).WithFields(logrus.Fields{
 			"latency": time.Since(start).String(),
 			"status":  res.Status,
 			"header":  res.Header,
-			"body":    body,
+			"body":    string(b[:bodyLen]),
 			"url":     r.fullURL,
 		}).Info("client do response info")
 	}

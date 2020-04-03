@@ -19,7 +19,8 @@ func TestMarshalBody_ShouldMarshalBody_ToBody(t *testing.T) {
 		Body: "{}",
 	}
 
-	r.marshalBody()
+	err := r.marshalBody()
 
+	assert.NoError(t, err)
 	assert.Equal(t, `{}`, string(r.body))
 }

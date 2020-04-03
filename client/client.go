@@ -115,7 +115,7 @@ func (c *Client) Do(req *Request) (*Response, error) {
 }
 
 func (c *Client) makeHTTPRequest(req *Request) (*http.Request, error) {
-	httpReq, err := http.NewRequest(req.Method, c.BaseURL+req.URL, bytes.NewReader(req.body))
+	httpReq, err := http.NewRequest(req.Method, req.fullURL, bytes.NewReader(req.body))
 	if err != nil {
 		return nil, err
 	}

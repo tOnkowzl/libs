@@ -48,7 +48,6 @@ func New(conf Config) (*Client, error) {
 	}
 
 	hystrixName := uuid.New().String()
-
 	if conf.TurnONCircuitBreaker {
 		hystrix.ConfigureCommand(hystrixName, hystrix.CommandConfig{
 			Timeout:                int(conf.Timeout / time.Millisecond),
@@ -59,9 +58,8 @@ func New(conf Config) (*Client, error) {
 		})
 	}
 
-	httpClient := conf.HTTPClient
-	if httpClient == nil {
-		httpClient = &http.Client{
+	if conf.HTTPClient == nil {
+		conf.HTTPClient = &http.Client{
 			Transport: &http.Transport{
 				MaxIdleConnsPerHost: conf.MaxConns,
 				MaxConnsPerHost:     conf.MaxConns,
@@ -73,7 +71,7 @@ func New(conf Config) (*Client, error) {
 
 	return &Client{
 		BasicAuth:             conf.BasicAuth,
-		HTTPClient:            httpClient,
+		HTTPClient:            conf.HTTPClient,
 		BaseURL:               conf.BaseURL,
 		TurnONCircuitBreaker:  conf.TurnONCircuitBreaker,
 		ErrorPercentThreshold: conf.ErrorPercentThreshold,

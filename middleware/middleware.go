@@ -140,14 +140,16 @@ func (m *Middleware) LogRequestInfo() echo.MiddlewareFunc {
 			}
 			c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(b))
 
+			bodySuffix := "..."
 			bodyLen := m.MaxLogRequestBody
-			if m.MaxLogRequestBody == -1 || bodyLen > len(b) {
+			if m.MaxLogRequestBody == -1 || bodyLen >= len(b) {
+				bodySuffix = ""
 				bodyLen = len(b)
 			}
 
 			logx.WithID(m.XRequestID(c)).WithFields(logrus.Fields{
 				"header": c.Request().Header,
-				"body":   string(b[:bodyLen]),
+				"body":   string(b[:bodyLen]) + bodySuffix,
 			}).Info(requestInfoMsg)
 
 			return next(c)
@@ -172,12 +174,17 @@ func (m *Middleware) LogResponseInfo() echo.MiddlewareFunc {
 			}
 
 			b := resBody.Bytes()
+			bodySuffix := "..."
 			bodyLen := m.MaxLogRequestBody
-			if m.MaxLogRequestBody == -1 || bodyLen > len(b) {
+			if m.MaxLogRequestBody == -1 || bodyLen >= len(b) {
+				bodySuffix = ""
 				bodyLen = len(b)
 			}
 
-			logx.WithID(m.XRequestID(c)).WithField("body", string(b[:bodyLen])).Info(responseInfoMsg)
+			logx.WithID(m.XRequestID(c)).WithField(
+				"body",
+				string(b[:bodyLen])+bodySuffix,
+			).Info(responseInfoMsg)
 
 			return nil
 		}

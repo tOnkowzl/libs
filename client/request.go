@@ -96,15 +96,17 @@ func (r *Request) initFullURL(baseurl string) {
 
 func (r *Request) logRequestInfo() {
 	if !r.HideLogRequest {
+		bodySuffix := "..."
 		bodyLen := r.MaxLogRequestBody
-		if bodyLen == -1 || bodyLen > len(r.body) {
+		if bodyLen == -1 || bodyLen >= len(r.body) {
 			bodyLen = len(r.body)
+			bodySuffix = ""
 		}
 
 		logx.WithID(r.XRequestID).WithFields(logrus.Fields{
 			"method": r.Method,
 			"url":    r.fullURL,
-			"body":   string(r.body[:bodyLen]),
+			"body":   string(r.body[:bodyLen]) + bodySuffix,
 			"header": r.Header,
 		}).Info("client do request info")
 	}
@@ -112,8 +114,10 @@ func (r *Request) logRequestInfo() {
 
 func (r *Request) logResponseInfo(b []byte, start time.Time, res *http.Response) {
 	if !r.HideLogResponse {
+		bodySuffix := "..."
 		bodyLen := r.MaxLogResponseBody
-		if bodyLen == -1 || bodyLen > len(r.body) {
+		if bodyLen == -1 || bodyLen >= len(r.body) {
+			bodySuffix = ""
 			bodyLen = len(r.body)
 		}
 
@@ -121,7 +125,7 @@ func (r *Request) logResponseInfo(b []byte, start time.Time, res *http.Response)
 			"latency": time.Since(start).String(),
 			"status":  res.Status,
 			"header":  res.Header,
-			"body":    string(b[:bodyLen]),
+			"body":    string(b[:bodyLen]) + bodySuffix,
 			"url":     r.fullURL,
 		}).Info("client do response info")
 	}

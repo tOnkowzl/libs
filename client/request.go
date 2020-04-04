@@ -95,38 +95,42 @@ func (r *Request) initFullURL(baseurl string) {
 }
 
 func (r *Request) logRequestInfo() {
-	if !r.HideLogRequest {
-		bodySuffix := "..."
-		bodyLen := r.MaxLogRequestBody
-		if bodyLen == -1 || bodyLen >= len(r.body) {
-			bodyLen = len(r.body)
-			bodySuffix = ""
-		}
-
-		logx.WithID(r.XRequestID).WithFields(logrus.Fields{
-			"method": r.Method,
-			"url":    r.fullURL,
-			"body":   string(r.body[:bodyLen]) + bodySuffix,
-			"header": r.Header,
-		}).Info("client do request info")
+	if r.HideLogRequest {
+		return
 	}
+
+	bodyLen, bodySuffix := r.logBodyInfo(r.MaxLogRequestBody, len(r.body))
+
+	logx.WithID(r.XRequestID).WithFields(logrus.Fields{
+		"method": r.Method,
+		"url":    r.fullURL,
+		"body":   string(r.body[:bodyLen]) + bodySuffix,
+		"header": r.Header,
+	}).Info("client do request info")
 }
 
 func (r *Request) logResponseInfo(b []byte, start time.Time, res *http.Response) {
-	if !r.HideLogResponse {
-		bodySuffix := "..."
-		bodyLen := r.MaxLogResponseBody
-		if bodyLen == -1 || bodyLen >= len(b) {
-			bodySuffix = ""
-			bodyLen = len(b)
-		}
-
-		logx.WithID(r.XRequestID).WithFields(logrus.Fields{
-			"latency": time.Since(start).String(),
-			"status":  res.Status,
-			"header":  res.Header,
-			"body":    string(b[:bodyLen]) + bodySuffix,
-			"url":     r.fullURL,
-		}).Info("client do response info")
+	if r.HideLogResponse {
+		return
 	}
+
+	bodyLen, bodySuffix := r.logBodyInfo(r.MaxLogResponseBody, len(b))
+
+	logx.WithID(r.XRequestID).WithFields(logrus.Fields{
+		"latency": time.Since(start).String(),
+		"status":  res.Status,
+		"header":  res.Header,
+		"body":    string(b[:bodyLen]) + bodySuffix,
+		"url":     r.fullURL,
+	}).Info("client do response info")
+}
+
+func (r *Request) logBodyInfo(maxBodyLen, bodyLen int) (int, string) {
+	if maxBodyLen == -1 {
+		return bodyLen, ""
+	}
+	if maxBodyLen < bodyLen {
+		return maxBodyLen, "..."
+	}
+	return bodyLen, ""
 }

@@ -201,7 +201,7 @@ func (m *Middleware) logBodyInfo(bodyLen int, unlimit bool) (int, string) {
 		return bodyLen, ""
 	}
 
-	maxBodyLen := 750
+	maxBodyLen := 1000
 	if maxBodyLen < bodyLen {
 		return maxBodyLen, "..."
 	}

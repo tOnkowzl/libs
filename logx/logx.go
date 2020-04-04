@@ -26,6 +26,13 @@ func Init(level, env string) {
 	Logger.SetFormatter(&JSONFormatter{})
 }
 
+func LimitMSG(s string) string {
+	if 1000 < len(s) {
+		return s[:1000] + "..."
+	}
+	return s
+}
+
 func WithID(requestID string) logrus.FieldLogger {
 	return Logger.WithField("id", requestID)
 }

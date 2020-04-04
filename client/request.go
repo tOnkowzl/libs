@@ -18,12 +18,10 @@ type Request struct {
 	Body       interface{}
 	Header     Header
 
-	HideLogRequest  bool
-	HideLogResponse bool
-
-	// -1 log all
-	MaxLogRequestBody  int
-	MaxLogResponseBody int
+	HideLogRequest         bool
+	HideLogResponse        bool
+	UnlimitLogRequestBody  bool
+	UnlimitLogResponseBody bool
 
 	fullURL    string
 	body       []byte
@@ -99,7 +97,7 @@ func (r *Request) logRequestInfo() {
 		return
 	}
 
-	bodyLen, bodySuffix := r.logBodyInfo(r.MaxLogRequestBody, len(r.body))
+	bodyLen, bodySuffix := r.logBodyInfo(len(r.body), r.UnlimitLogRequestBody)
 
 	logx.WithID(r.XRequestID).WithFields(logrus.Fields{
 		"method": r.Method,
@@ -114,7 +112,7 @@ func (r *Request) logResponseInfo(b []byte, start time.Time, res *http.Response)
 		return
 	}
 
-	bodyLen, bodySuffix := r.logBodyInfo(r.MaxLogResponseBody, len(b))
+	bodyLen, bodySuffix := r.logBodyInfo(len(b), r.UnlimitLogResponseBody)
 
 	logx.WithID(r.XRequestID).WithFields(logrus.Fields{
 		"latency": time.Since(start).String(),
@@ -125,10 +123,12 @@ func (r *Request) logResponseInfo(b []byte, start time.Time, res *http.Response)
 	}).Info("client do response info")
 }
 
-func (r *Request) logBodyInfo(maxBodyLen, bodyLen int) (int, string) {
-	if maxBodyLen == -1 {
+func (r *Request) logBodyInfo(bodyLen int, unlimit bool) (int, string) {
+	if unlimit {
 		return bodyLen, ""
 	}
+
+	maxBodyLen := 750
 	if maxBodyLen < bodyLen {
 		return maxBodyLen, "..."
 	}

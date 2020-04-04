@@ -37,17 +37,14 @@ type Middleware struct {
 	Service string
 	Skipper Skipper
 
-	// -1 mean log all body
-	MaxLogRequestBody int
-	MaxLogResponeBody int
+	UnLimitLogRequestBody  bool
+	UnlimitLogResponseBody bool
 }
 
 func New(service string) *Middleware {
 	return &Middleware{
-		Service:           service,
-		MaxLogRequestBody: -1,
-		MaxLogResponeBody: -1,
-		Skipper:           DefaultSkipper,
+		Service: service,
+		Skipper: DefaultSkipper,
 	}
 }
 
@@ -140,12 +137,7 @@ func (m *Middleware) LogRequestInfo() echo.MiddlewareFunc {
 			}
 			c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(b))
 
-			bodySuffix := "..."
-			bodyLen := m.MaxLogRequestBody
-			if m.MaxLogRequestBody == -1 || bodyLen >= len(b) {
-				bodySuffix = ""
-				bodyLen = len(b)
-			}
+			bodyLen, bodySuffix := m.logBodyInfo(len(b), m.UnLimitLogRequestBody)
 
 			logx.WithID(m.XRequestID(c)).WithFields(logrus.Fields{
 				"header": c.Request().Header,
@@ -174,12 +166,7 @@ func (m *Middleware) LogResponseInfo() echo.MiddlewareFunc {
 			}
 
 			b := resBody.Bytes()
-			bodySuffix := "..."
-			bodyLen := m.MaxLogRequestBody
-			if m.MaxLogRequestBody == -1 || bodyLen >= len(b) {
-				bodySuffix = ""
-				bodyLen = len(b)
-			}
+			bodyLen, bodySuffix := m.logBodyInfo(len(b), m.UnlimitLogResponseBody)
 
 			logx.WithID(m.XRequestID(c)).WithField(
 				"body",
@@ -207,6 +194,18 @@ func (m *Middleware) Build(buildstamp, githash string) echo.MiddlewareFunc {
 
 func (m *Middleware) XRequestID(c echo.Context) string {
 	return c.Response().Header().Get(echo.HeaderXRequestID)
+}
+
+func (m *Middleware) logBodyInfo(bodyLen int, unlimit bool) (int, string) {
+	if unlimit {
+		return bodyLen, ""
+	}
+
+	maxBodyLen := 750
+	if maxBodyLen < bodyLen {
+		return maxBodyLen, "..."
+	}
+	return bodyLen, ""
 }
 
 type bodyDumpResponseWriter struct {

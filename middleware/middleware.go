@@ -178,6 +178,17 @@ func (m *Middleware) LogResponseInfo() echo.MiddlewareFunc {
 	}
 }
 
+func (m *Middleware) LogError() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			if c.Response().Status > 299 {
+				logx.WithID(m.XRequestID(c)).Error("%+v")
+			}
+			return next(c)
+		}
+	}
+}
+
 func (m *Middleware) Build(buildstamp, githash string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {

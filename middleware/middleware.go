@@ -168,10 +168,10 @@ func (m *Middleware) LogResponseInfo() echo.MiddlewareFunc {
 			b := resBody.Bytes()
 			bodyLen, bodySuffix := m.logBodyInfo(len(b), m.UnlimitLogResponseBody)
 
-			logx.WithID(m.XRequestID(c)).WithField(
-				"body",
-				string(b[:bodyLen])+bodySuffix,
-			).Info(responseInfoMsg)
+			logx.WithID(m.XRequestID(c)).WithFields(logrus.Fields{
+				"header": c.Response().Header,
+				"body":   string(b[:bodyLen]) + bodySuffix,
+			}).Info(responseInfoMsg)
 
 			return nil
 		}
@@ -181,10 +181,15 @@ func (m *Middleware) LogResponseInfo() echo.MiddlewareFunc {
 func (m *Middleware) LogError() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
+			if err := next(c); err != nil {
+				c.Error(err)
+			}
+
 			if c.Response().Status > 299 {
 				logx.WithID(m.XRequestID(c)).Error("%+v")
 			}
-			return next(c)
+
+			return nil
 		}
 	}
 }

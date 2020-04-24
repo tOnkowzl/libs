@@ -5,9 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"gitdev.inno.ktb/go/libs.git/logx"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	"github.com/tOnkowzl/libs/logx"
 )
 
 // Request for client do

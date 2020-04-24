@@ -11,10 +11,10 @@ import (
 	"runtime"
 	"time"
 
-	"gitdev.inno.ktb/go/libs.git/logx"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
+	"github.com/tOnkowzl/libs/logx"
 )
 
 var (

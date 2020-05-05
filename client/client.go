@@ -110,7 +110,7 @@ func (c *Client) Do(req *Request) (*Response, error) {
 	return &Response{
 		Response:   res,
 		Marshaller: req.marshaller,
-		body:       b,
+		Body:       b,
 	}, nil
 }
 

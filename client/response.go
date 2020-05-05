@@ -8,7 +8,7 @@ import (
 type Response struct {
 	*http.Response
 	Marshaller
-	body []byte
+	Body []byte
 }
 
 // IsOK checking httpStatusCode is < 300
@@ -27,5 +27,5 @@ func (r *Response) IsNotOK() bool {
 //  - ErrResponseNilBody when Response Body is nil
 //  - Other error when read body or unmarshal by marshaller
 func (r *Response) Unmarshal(v interface{}) error {
-	return r.Marshaller.Unmarshal(r.body, v)
+	return r.Marshaller.Unmarshal(r.Body, v)
 }

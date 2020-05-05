@@ -37,7 +37,7 @@ type Middleware struct {
 	Service string
 	Skipper Skipper
 
-	UnLimitLogRequestBody  bool
+	UnlimitLogRequestBody  bool
 	UnlimitLogResponseBody bool
 }
 
@@ -137,11 +137,16 @@ func (m *Middleware) LogRequestInfo() echo.MiddlewareFunc {
 			}
 			c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(b))
 
-			bodyLen, bodySuffix := m.logBodyInfo(len(b), m.UnLimitLogRequestBody)
+			var body string
+			if m.UnlimitLogRequestBody {
+				body = string(b)
+			} else {
+				body = logx.LimitMSG(b)
+			}
 
 			logx.WithID(m.XRequestID(c)).WithFields(logrus.Fields{
 				"header": c.Request().Header,
-				"body":   string(b[:bodyLen]) + bodySuffix,
+				"body":   body,
 			}).Info(requestInfoMsg)
 
 			return next(c)
@@ -166,11 +171,17 @@ func (m *Middleware) LogResponseInfo() echo.MiddlewareFunc {
 			}
 
 			b := resBody.Bytes()
-			bodyLen, bodySuffix := m.logBodyInfo(len(b), m.UnlimitLogResponseBody)
+
+			var body string
+			if m.UnlimitLogResponseBody {
+				body = string(b)
+			} else {
+				body = logx.LimitMSG(b)
+			}
 
 			logx.WithID(m.XRequestID(c)).WithFields(logrus.Fields{
 				"header": c.Response().Header,
-				"body":   string(b[:bodyLen]) + bodySuffix,
+				"body":   body,
 			}).Info(responseInfoMsg)
 
 			return nil
@@ -194,18 +205,6 @@ func (m *Middleware) Build(buildstamp, githash string) echo.MiddlewareFunc {
 
 func (m *Middleware) XRequestID(c echo.Context) string {
 	return c.Response().Header().Get(echo.HeaderXRequestID)
-}
-
-func (m *Middleware) logBodyInfo(bodyLen int, unlimit bool) (int, string) {
-	if unlimit {
-		return bodyLen, ""
-	}
-
-	maxBodyLen := 1000
-	if maxBodyLen < bodyLen {
-		return maxBodyLen, "..."
-	}
-	return bodyLen, ""
 }
 
 type bodyDumpResponseWriter struct {

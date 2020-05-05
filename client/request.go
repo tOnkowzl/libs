@@ -97,12 +97,17 @@ func (r *Request) logRequestInfo() {
 		return
 	}
 
-	bodyLen, bodySuffix := r.logBodyInfo(len(r.body), r.UnlimitLogRequestBody)
+	var body string
+	if r.UnlimitLogRequestBody {
+		body = string(r.body)
+	} else {
+		body = logx.LimitMSG(r.body)
+	}
 
 	logx.WithID(r.XRequestID).WithFields(logrus.Fields{
 		"method": r.Method,
 		"url":    r.fullURL,
-		"body":   string(r.body[:bodyLen]) + bodySuffix,
+		"body":   body,
 		"header": r.Header,
 	}).Info("client do request info")
 }
@@ -112,25 +117,18 @@ func (r *Request) logResponseInfo(b []byte, start time.Time, res *http.Response)
 		return
 	}
 
-	bodyLen, bodySuffix := r.logBodyInfo(len(b), r.UnlimitLogResponseBody)
+	var body string
+	if r.UnlimitLogResponseBody {
+		body = string(b)
+	} else {
+		body = logx.LimitMSG(b)
+	}
 
 	logx.WithID(r.XRequestID).WithFields(logrus.Fields{
 		"latency": time.Since(start).String(),
 		"status":  res.Status,
 		"header":  res.Header,
-		"body":    string(b[:bodyLen]) + bodySuffix,
+		"body":    body,
 		"url":     r.fullURL,
 	}).Info("client do response info")
-}
-
-func (r *Request) logBodyInfo(bodyLen int, unlimit bool) (int, string) {
-	if unlimit {
-		return bodyLen, ""
-	}
-
-	maxBodyLen := 1000
-	if maxBodyLen < bodyLen {
-		return maxBodyLen, "..."
-	}
-	return bodyLen, ""
 }

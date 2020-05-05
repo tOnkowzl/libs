@@ -6,6 +6,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	limitMSG = 5000
+)
+
 var Logger = logrus.New()
 
 func Init(level, env string) {
@@ -27,8 +31,8 @@ func Init(level, env string) {
 }
 
 func LimitMSG(b []byte) string {
-	if 1000 < len(b) {
-		return string(b[:1000]) + "..."
+	if limitMSG < len(b) {
+		return string(b[:limitMSG]) + "..."
 	}
 	return string(b)
 }

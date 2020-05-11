@@ -180,7 +180,7 @@ func (m *Middleware) LogResponseInfo() echo.MiddlewareFunc {
 			}
 
 			logx.WithID(m.XRequestID(c)).WithFields(logrus.Fields{
-				"header": c.Response().Header,
+				"header": c.Response().Header(),
 				"body":   body,
 			}).Info(responseInfoMsg)
 

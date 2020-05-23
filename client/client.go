@@ -78,6 +78,8 @@ func (c *Client) Do(req *Request) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	latency := time.Since(start).String()
+
 	defer res.Body.Close()
 
 	b, err := ioutil.ReadAll(res.Body)
@@ -85,7 +87,7 @@ func (c *Client) Do(req *Request) (*Response, error) {
 		return nil, err
 	}
 
-	req.logResponseInfo(b, start, res)
+	req.logResponseInfo(b, latency, res)
 
 	return &Response{
 		Response:   res,

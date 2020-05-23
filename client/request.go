@@ -3,7 +3,6 @@ package client
 import (
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -52,16 +51,16 @@ func (r *Request) marshalBody() error {
 }
 
 func (r *Request) newMarshaller() {
-	if strings.ToLower(r.Header[ContentType]) == ApplicationXML {
-		r.marshaller = XML{}
-		return
+	if strings.ToLower(r.Header[ContentType]) == ApplicationJSON {
+		r.marshaller = new(JSON)
 	}
-	if strings.ToLower(r.Header[ContentType]) == TextXML {
-		r.marshaller = XML{}
+
+	if strings.ToLower(r.Header[ContentType]) == ApplicationXML ||
+		strings.ToLower(r.Header[ContentType]) == TextXML {
+		r.marshaller = new(XML)
 		return
 	}
 
-	r.marshaller = JSON{}
 }
 
 func (r *Request) addHeader(key, value string) {
@@ -112,7 +111,7 @@ func (r *Request) logRequestInfo() {
 	}).Info("client do request info")
 }
 
-func (r *Request) logResponseInfo(b []byte, start time.Time, res *http.Response) {
+func (r *Request) logResponseInfo(b []byte, latency string, res *http.Response) {
 	if r.HideLogResponse {
 		return
 	}
@@ -125,7 +124,7 @@ func (r *Request) logResponseInfo(b []byte, start time.Time, res *http.Response)
 	}
 
 	logx.WithID(r.XRequestID).WithFields(logrus.Fields{
-		"latency": time.Since(start).String(),
+		"latency": latency,
 		"status":  res.Status,
 		"header":  res.Header,
 		"body":    body,

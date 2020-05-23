@@ -7,9 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
-
-	"github.com/afex/hystrix-go/hystrix"
-	"github.com/google/uuid"
 )
 
 var (
@@ -34,28 +31,14 @@ type Clienter interface {
 }
 
 type Client struct {
-	BasicAuth             BasicAuth
-	HTTPClient            *http.Client
-	BaseURL               string
-	TurnONCircuitBreaker  bool
-	ErrorPercentThreshold int
-	HystrixName           string
+	BasicAuth  BasicAuth
+	HTTPClient *http.Client
+	BaseURL    string
 }
 
 func New(conf Config) (*Client, error) {
 	if conf.BaseURL == "" {
 		return nil, errors.New("require base url")
-	}
-
-	hystrixName := uuid.New().String()
-	if conf.TurnONCircuitBreaker {
-		hystrix.ConfigureCommand(hystrixName, hystrix.CommandConfig{
-			Timeout:                int(conf.Timeout / time.Millisecond),
-			MaxConcurrentRequests:  conf.MaxConns * 2,
-			ErrorPercentThreshold:  conf.ErrorPercentThreshold,
-			RequestVolumeThreshold: conf.RequestVolumeThreshold,
-			SleepWindow:            conf.SleepWindow,
-		})
 	}
 
 	if conf.HTTPClient == nil {
@@ -70,12 +53,9 @@ func New(conf Config) (*Client, error) {
 	}
 
 	return &Client{
-		BasicAuth:             conf.BasicAuth,
-		HTTPClient:            conf.HTTPClient,
-		BaseURL:               conf.BaseURL,
-		TurnONCircuitBreaker:  conf.TurnONCircuitBreaker,
-		ErrorPercentThreshold: conf.ErrorPercentThreshold,
-		HystrixName:           hystrixName,
+		BasicAuth:  conf.BasicAuth,
+		HTTPClient: conf.HTTPClient,
+		BaseURL:    conf.BaseURL,
 	}, nil
 }
 
@@ -94,7 +74,7 @@ func (c *Client) Do(req *Request) (*Response, error) {
 	}
 
 	start := time.Now()
-	res, err := c.do(httpReq)
+	res, err := c.HTTPClient.Do(httpReq)
 	if err != nil {
 		return nil, err
 	}
@@ -129,27 +109,4 @@ func (c *Client) makeHTTPRequest(req *Request) (*http.Request, error) {
 	}
 
 	return httpReq, nil
-}
-
-func (c *Client) do(req *http.Request) (*http.Response, error) {
-	if !c.TurnONCircuitBreaker {
-		return c.HTTPClient.Do(req)
-	}
-
-	var httpRes *http.Response
-	err := hystrix.Do(c.HystrixName, func() error {
-		res, err := c.HTTPClient.Do(req)
-		if err != nil {
-			return err
-		}
-
-		httpRes = res
-
-		return nil
-	}, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return httpRes, nil
 }

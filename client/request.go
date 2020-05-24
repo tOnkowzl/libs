@@ -62,6 +62,7 @@ func (r *Request) newMarshaller() {
 		return
 	}
 
+	r.marshaller = new(JSON)
 }
 
 func (r *Request) addHeader(key, value string) {

@@ -53,6 +53,7 @@ func (r *Request) marshalBody() error {
 func (r *Request) newMarshaller() {
 	if strings.ToLower(r.Header[ContentType]) == ApplicationJSON {
 		r.marshaller = new(JSON)
+		return
 	}
 
 	if strings.ToLower(r.Header[ContentType]) == ApplicationXML ||

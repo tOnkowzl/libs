@@ -76,6 +76,7 @@ func (c *Client) Do(req *Request) (*Response, error) {
 	start := time.Now()
 	res, err := c.HTTPClient.Do(httpReq)
 	if err != nil {
+		req.logResponseInfo(err, nil, "", nil)
 		return nil, err
 	}
 	latency := time.Since(start).String()
@@ -84,10 +85,11 @@ func (c *Client) Do(req *Request) (*Response, error) {
 
 	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {
+		req.logResponseInfo(err, nil, "", nil)
 		return nil, err
 	}
 
-	req.logResponseInfo(b, latency, res)
+	req.logResponseInfo(err, b, latency, res)
 
 	return &Response{
 		Response:   res,

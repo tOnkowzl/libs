@@ -111,9 +111,16 @@ func (r *Request) logRequestInfo() {
 	}).Info("client do request info")
 }
 
-func (r *Request) logResponseInfo(b []byte, latency string, res *http.Response) {
+func (r *Request) logResponseInfo(err error, b []byte, latency string, res *http.Response) {
 	if r.HideLogResponse {
 		return
+	}
+
+	if err != nil {
+		logx.WithID(r.XRequestID).WithFields(logrus.Fields{
+			"url":   r.fullURL,
+			"error": err,
+		}).Info("client do response info")
 	}
 
 	var body string

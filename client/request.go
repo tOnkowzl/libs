@@ -129,6 +129,7 @@ func (r *Request) logResponseInfo(err error, b []byte, latency string, res *http
 			"url":   r.fullURL,
 			"error": err,
 		}).Info("client do response info")
+		return
 	}
 
 	var body string

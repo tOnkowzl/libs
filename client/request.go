@@ -27,11 +27,17 @@ type Request struct {
 	marshaller Marshaller
 }
 
-func (r *Request) init(baseURL string) {
+func (r *Request) init(baseURL string) error {
 	r.initXRequestID()
 	r.initFullURL(baseURL)
 	r.newMarshaller()
 	r.initRequireHeaders()
+
+	if err := r.marshalBody(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *Request) marshalBody() error {

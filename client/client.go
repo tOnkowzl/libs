@@ -60,9 +60,7 @@ func New(conf Config) (*Client, error) {
 }
 
 func (c *Client) Do(req *Request) (*Response, error) {
-	req.init(c.BaseURL)
-
-	if err := req.marshalBody(); err != nil {
+	if err := req.init(c.BaseURL); err != nil {
 		return nil, err
 	}
 

@@ -72,14 +72,14 @@ func (r *Request) newMarshaller() {
 }
 
 func (r *Request) addHeader(key, value string) {
-	if r.Header == nil {
-		r.Header = Header{}
-	}
-
 	r.Header[key] = value
 }
 
 func (r *Request) initRequireHeaders() {
+	if r.Header == nil {
+		r.Header = Header{}
+	}
+
 	if _, ok := r.Header[ContentType]; !ok {
 		r.addHeader(ContentType, ApplicationJSON)
 	}

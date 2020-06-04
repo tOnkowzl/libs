@@ -10,10 +10,3 @@ const (
 	HeaderXRequestID    = "X-Request-ID"
 	HeaderAuthorization = "Authorization"
 )
-
-// Header var
-var (
-	HeaderApplicationJSON = Header{ContentType: ApplicationJSON}
-	HeaderApplicationXML  = Header{ContentType: ApplicationXML}
-	HeaderTextXML         = Header{ContentType: TextXML}
-)

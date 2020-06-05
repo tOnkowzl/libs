@@ -107,6 +107,7 @@ func (m *Middleware) Logger() echo.MiddlewareFunc {
 
 			logx.WithID(m.XRequestID(c)).WithFields(logrus.Fields{
 				"method":    req.Method,
+				"host":      req.Host,
 				"path_uri":  req.RequestURI,
 				"remote_ip": c.RealIP(),
 				"status":    res.Status,

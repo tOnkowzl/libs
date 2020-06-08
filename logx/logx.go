@@ -25,7 +25,7 @@ func Init(level, env string) {
 		return
 	}
 
-	logrus.SetFormatter(&JSONFormatter{})
+	logrus.SetFormatter(&logrus.JSONFormatter{})
 }
 
 func LimitMSG(b []byte) string {

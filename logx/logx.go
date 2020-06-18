@@ -10,6 +10,10 @@ const (
 	limitMSG = 5000
 )
 
+func StandardLogger() *logrus.Logger {
+	return logrus.StandardLogger()
+}
+
 func Init(level, env string) {
 	logrus.SetOutput(os.Stdout)
 

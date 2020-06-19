@@ -1,6 +1,8 @@
 package logx
 
 import (
+	"time"
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -14,14 +16,13 @@ func (*GormLogger) Print(v ...interface{}) {
 	switch v[0] {
 	case "sql":
 		logrus.WithFields(logrus.Fields{
-			"module":        "gorm",
-			"type":          "sql",
 			"rows_returned": v[5],
 			"src":           v[1],
 			"values":        v[4],
-			"duration":      v[2],
-		}).Info(v[3])
+			"duration":      time.Duration(v[2].(int64)).String(),
+			"stmt":          v[3],
+		}).Info("gorm response information")
 	case "log":
-		logrus.WithFields(logrus.Fields{"module": "gorm", "type": "log"}).Print(v[2])
+		logrus.WithFields(logrus.Fields{"data": v[2]}).Print("gorm log")
 	}
 }

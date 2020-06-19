@@ -25,8 +25,8 @@ var (
 )
 
 const (
-	requestInfoMsg       = "request information"
-	responseInfoMsg      = "response information"
+	requestInfoMsg       = "echo request information"
+	responseInfoMsg      = "echo response information"
 	logKeywordDontChange = "api_summary"
 )
 

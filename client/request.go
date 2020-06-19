@@ -116,7 +116,7 @@ func (r *Request) logRequestInfo() {
 		"url":    r.fullURL,
 		"body":   body,
 		"header": r.Header,
-	}).Info("client do request info")
+	}).Info("client do request information")
 }
 
 func (r *Request) logResponseInfo(err error, b []byte, latency string, res *http.Response) {
@@ -128,7 +128,7 @@ func (r *Request) logResponseInfo(err error, b []byte, latency string, res *http
 		logx.WithID(r.XRequestID).WithFields(logrus.Fields{
 			"url":   r.fullURL,
 			"error": err,
-		}).Info("client do response info")
+		}).Info("client do response information")
 		return
 	}
 

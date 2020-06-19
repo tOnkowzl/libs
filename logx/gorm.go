@@ -19,7 +19,7 @@ func (*GormLogger) Print(v ...interface{}) {
 			"rows_returned": v[5],
 			"src":           v[1],
 			"values":        v[4],
-			"duration":      time.Duration(v[2].(int64)).String(),
+			"duration":      v[2].(time.Duration).String(),
 			"stmt":          v[3],
 		}).Info("gorm response information")
 	case "log":

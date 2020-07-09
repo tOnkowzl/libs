@@ -31,9 +31,8 @@ var (
 )
 
 const (
-	requestInfoMsg       = "echo request information"
-	responseInfoMsg      = "echo response information"
-	logKeywordDontChange = "api_summary"
+	requestInfoMsg  = "echo request information"
+	responseInfoMsg = "echo response information"
 )
 
 // Skipper skip middleware
@@ -75,36 +74,6 @@ func RecoverWithConfig(config middleware.RecoverConfig) echo.MiddlewareFunc {
 				}
 			}()
 			return next(c)
-		}
-	}
-}
-
-// Logger log request information
-func Logger() echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) (err error) {
-			if DefaultSkipper(c) {
-				return next(c)
-			}
-
-			req := c.Request()
-			res := c.Response()
-
-			start := time.Now()
-			if err = next(c); err != nil {
-				c.Error(err)
-			}
-
-			logx.WithContext(c.Request().Context()).WithFields(logrus.Fields{
-				"method":    req.Method,
-				"host":      req.Host,
-				"path_uri":  req.RequestURI,
-				"remote_ip": c.RealIP(),
-				"status":    res.Status,
-				"duration":  time.Since(start).String,
-			}).Info(logKeywordDontChange)
-
-			return
 		}
 	}
 }
@@ -170,11 +139,15 @@ func LogResponseInfo() echo.MiddlewareFunc {
 				return next(c)
 			}
 
+			req := c.Request()
+			res := c.Response()
+
 			resBody := new(bytes.Buffer)
 			mw := io.MultiWriter(c.Response().Writer, resBody)
 			writer := &bodyDumpResponseWriter{Writer: mw, ResponseWriter: c.Response().Writer}
 			c.Response().Writer = writer
 
+			start := time.Now()
 			if err := next(c); err != nil {
 				c.Error(err)
 			}
@@ -189,8 +162,14 @@ func LogResponseInfo() echo.MiddlewareFunc {
 			}
 
 			logx.WithContext(c.Request().Context()).WithFields(logrus.Fields{
-				"header": c.Response().Header(),
-				"body":   body,
+				"header":    c.Response().Header(),
+				"body":      body,
+				"method":    req.Method,
+				"host":      req.Host,
+				"path_uri":  req.RequestURI,
+				"remote_ip": c.RealIP(),
+				"status":    res.Status,
+				"duration":  time.Since(start).String,
 			}).Info(responseInfoMsg)
 
 			return nil
@@ -198,14 +177,11 @@ func LogResponseInfo() echo.MiddlewareFunc {
 	}
 }
 
-func Build(buildstamp, githash string) echo.MiddlewareFunc {
+func Health() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if c.Path() == "/builds" {
-				return c.JSON(http.StatusOK, map[string]string{
-					"buildstamp": buildstamp,
-					"githash":    githash,
-				})
+			if c.Path() == "/health" {
+				return c.JSON(http.StatusOK, "ok!")
 			}
 			return next(c)
 		}

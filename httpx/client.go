@@ -61,7 +61,7 @@ func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 		req.logResponseInfo(ctx, err, nil, "", nil)
 		return nil, err
 	}
-	latency := time.Since(start).String()
+	duration := time.Since(start).String()
 
 	defer res.Body.Close()
 
@@ -71,7 +71,7 @@ func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 		return nil, err
 	}
 
-	req.logResponseInfo(ctx, nil, b, latency, res)
+	req.logResponseInfo(ctx, nil, b, duration, res)
 
 	return &Response{
 		Response:   res,

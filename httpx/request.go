@@ -112,7 +112,7 @@ func (r *Request) logRequestInfo(ctx context.Context) {
 	}).Info("client do request information")
 }
 
-func (r *Request) logResponseInfo(ctx context.Context, err error, b []byte, latency string, res *http.Response) {
+func (r *Request) logResponseInfo(ctx context.Context, err error, b []byte, duration string, res *http.Response) {
 	if r.HideLogResponse {
 		return
 	}
@@ -133,10 +133,10 @@ func (r *Request) logResponseInfo(ctx context.Context, err error, b []byte, late
 	}
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{
-		"latency": latency,
-		"status":  res.Status,
-		"header":  res.Header,
-		"body":    body,
-		"url":     r.fullURL,
+		"duration": duration,
+		"status":   res.Status,
+		"header":   res.Header,
+		"body":     body,
+		"url":      r.fullURL,
 	}).Info("client do response info")
 }

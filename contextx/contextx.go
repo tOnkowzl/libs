@@ -1,6 +1,10 @@
 package contextx
 
-import "context"
+import (
+	"context"
+
+	"github.com/google/uuid"
+)
 
 type Key int
 
@@ -14,4 +18,8 @@ func GetID(ctx context.Context) string {
 	}
 
 	return ""
+}
+
+func WithID() context.Context {
+	return context.WithValue(context.Background(), ID, uuid.New().String())
 }

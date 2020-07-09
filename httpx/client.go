@@ -10,10 +10,6 @@ import (
 	"time"
 )
 
-type Clienter interface {
-	Do(*Request) (*Response, error)
-}
-
 type Client struct {
 	BasicAuth  BasicAuth
 	HTTPClient *http.Client

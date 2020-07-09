@@ -6,14 +6,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/tOnkowzl/libs/contextx"
 	glogger "gorm.io/gorm/logger"
 	"gorm.io/gorm/utils"
-)
-
-type contextKey int
-
-const (
-	ID contextKey = iota
 )
 
 const (
@@ -105,7 +100,7 @@ func (l logger) Error(ctx context.Context, msg string, data ...interface{}) {
 // Trace print sql message
 func (l logger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
 	if l.LogLevel > 0 {
-		elapsed := time.Now().Sub(begin)
+		elapsed := time.Since(begin)
 		switch {
 		case err != nil && l.LogLevel >= glogger.Error:
 			sql, rows := fc()
@@ -121,11 +116,11 @@ func (l logger) Trace(ctx context.Context, begin time.Time, fc func() (string, i
 }
 
 func WithCtxID(id string) context.Context {
-	return context.WithValue(context.Background(), ID, id)
+	return context.WithValue(context.Background(), contextx.ID, id)
 }
 
 func ctxID(ctx context.Context) string {
-	if id, ok := ctx.Value(ID).(string); ok {
+	if id, ok := ctx.Value(contextx.ID).(string); ok {
 		return id
 	}
 

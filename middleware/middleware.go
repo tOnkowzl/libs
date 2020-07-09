@@ -169,7 +169,7 @@ func LogResponseInfo() echo.MiddlewareFunc {
 				"path_uri":  req.RequestURI,
 				"remote_ip": c.RealIP(),
 				"status":    res.Status,
-				"duration":  time.Since(start).String,
+				"duration":  time.Since(start).String(),
 			}).Info(responseInfoMsg)
 
 			return nil

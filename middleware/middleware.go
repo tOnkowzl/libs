@@ -106,7 +106,6 @@ func (m *Middleware) Logger() echo.MiddlewareFunc {
 			if err = next(c); err != nil {
 				c.Error(err)
 			}
-			stop := time.Now()
 
 			logx.WithID(m.XRequestID(c)).WithFields(logrus.Fields{
 				"method":    req.Method,
@@ -114,7 +113,7 @@ func (m *Middleware) Logger() echo.MiddlewareFunc {
 				"path_uri":  req.RequestURI,
 				"remote_ip": c.RealIP(),
 				"status":    res.Status,
-				"latency":   stop.Sub(start).String(),
+				"duration":  time.Since(start).String,
 				"service":   m.Service,
 			}).Info(logKeywordDontChange)
 

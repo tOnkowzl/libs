@@ -2,6 +2,7 @@ package httpx
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"errors"
 	"io/ioutil"
@@ -42,12 +43,12 @@ func New(conf Config) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) Do(req *Request) (*Response, error) {
-	if err := req.init(c.BaseURL); err != nil {
+func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
+	if err := req.init(ctx, c.BaseURL); err != nil {
 		return nil, err
 	}
 
-	req.logRequestInfo()
+	req.logRequestInfo(ctx)
 
 	httpReq, err := c.makeHTTPRequest(req)
 	if err != nil {
@@ -57,7 +58,7 @@ func (c *Client) Do(req *Request) (*Response, error) {
 	start := time.Now()
 	res, err := c.HTTPClient.Do(httpReq)
 	if err != nil {
-		req.logResponseInfo(err, nil, "", nil)
+		req.logResponseInfo(ctx, err, nil, "", nil)
 		return nil, err
 	}
 	latency := time.Since(start).String()
@@ -66,11 +67,11 @@ func (c *Client) Do(req *Request) (*Response, error) {
 
 	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		req.logResponseInfo(err, nil, "", nil)
+		req.logResponseInfo(ctx, err, nil, "", nil)
 		return nil, err
 	}
 
-	req.logResponseInfo(nil, b, latency, res)
+	req.logResponseInfo(ctx, nil, b, latency, res)
 
 	return &Response{
 		Response:   res,

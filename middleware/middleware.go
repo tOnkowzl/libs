@@ -23,7 +23,7 @@ import (
 var (
 	// DefaultSkipper default of skipper
 	DefaultSkipper = func(c echo.Context) bool {
-		return c.Path() == "/builds"
+		return c.Path() == "/health"
 	}
 
 	UnlimitLogRequestBody  bool

@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/tOnkowzl/libs/contextx"
 	glogger "gorm.io/gorm/logger"
 	"gorm.io/gorm/utils"
 )
@@ -113,8 +112,4 @@ func (l logger) Trace(ctx context.Context, begin time.Time, fc func() (string, i
 			WithContext(ctx).Printf(l.traceStr, utils.FileWithLineNum(), float64(elapsed.Nanoseconds())/1e6, rows, sql)
 		}
 	}
-}
-
-func WithCtxID(id string) context.Context {
-	return context.WithValue(context.Background(), contextx.ID, id)
 }

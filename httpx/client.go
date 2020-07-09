@@ -70,7 +70,7 @@ func (c *Client) Do(req *Request) (*Response, error) {
 		return nil, err
 	}
 
-	req.logResponseInfo(err, b, latency, res)
+	req.logResponseInfo(nil, b, latency, res)
 
 	return &Response{
 		Response:   res,

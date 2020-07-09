@@ -104,7 +104,7 @@ func (r *Request) logRequestInfo(ctx context.Context) {
 		body = logx.LimitMSG(r.body)
 	}
 
-	logx.WithID(contextx.GetID(ctx)).WithFields(logrus.Fields{
+	logx.WithContext(ctx).WithFields(logrus.Fields{
 		"method": r.Method,
 		"url":    r.fullURL,
 		"body":   body,
@@ -118,7 +118,7 @@ func (r *Request) logResponseInfo(ctx context.Context, err error, b []byte, late
 	}
 
 	if err != nil {
-		logx.WithID(contextx.GetID(ctx)).WithFields(logrus.Fields{
+		logx.WithContext(ctx).WithFields(logrus.Fields{
 			"url":   r.fullURL,
 			"error": err,
 		}).Info("client do response information")
@@ -132,7 +132,7 @@ func (r *Request) logResponseInfo(ctx context.Context, err error, b []byte, late
 		body = logx.LimitMSG(b)
 	}
 
-	logx.WithID(contextx.GetID(ctx)).WithFields(logrus.Fields{
+	logx.WithContext(ctx).WithFields(logrus.Fields{
 		"latency": latency,
 		"status":  res.Status,
 		"header":  res.Header,

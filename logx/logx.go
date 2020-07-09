@@ -1,9 +1,11 @@
 package logx
 
 import (
+	"context"
 	"os"
 
 	"github.com/sirupsen/logrus"
+	"github.com/tOnkowzl/libs/contextx"
 )
 
 const (
@@ -39,8 +41,12 @@ func LimitMSG(b []byte) string {
 	return string(b)
 }
 
-func WithID(requestID string) logrus.FieldLogger {
-	return logrus.WithField("id", requestID)
+func WithContext(ctx context.Context) logrus.FieldLogger {
+	return WithID(contextx.GetID(ctx))
+}
+
+func WithID(id string) logrus.FieldLogger {
+	return logrus.WithField("id", id)
 }
 
 func WithField(key string, value interface{}) *logrus.Entry {

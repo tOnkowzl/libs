@@ -1,12 +1,17 @@
 package httpx
 
-// Header const
-const (
-	ContentType     = "Content-Type"
-	ApplicationJSON = "application/json; charset=utf-8"
-	ApplicationXML  = "application/xml; charset=utf-8"
-	TextXML         = "text/xml; charset=utf-8"
+import "errors"
 
-	HeaderXRequestID    = "X-Request-ID"
-	HeaderAuthorization = "Authorization"
+var (
+	// ErrResponseNil return when unmarshal response but response is nil
+	ErrResponseNil = errors.New("response is nil")
+
+	// ErrResponseNilBody return when unmarshal response but response body is nil
+	ErrResponseNilBody = errors.New("response body is nil")
+
+	// ErrServiceConfigNotSpecifyContentType return when call service without Content-Type header
+	ErrServiceConfigNotSpecifyContentType = errors.New("service header not set Content-Type")
+
+	// ErrContentTypeNotSupport return when call service with not support Content-Type
+	ErrContentTypeNotSupport = errors.New("Content-Type not support")
 )

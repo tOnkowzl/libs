@@ -3,6 +3,7 @@ package middleware
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -11,9 +12,11 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
+	"github.com/tOnkowzl/libs/contextx"
 	"github.com/tOnkowzl/libs/logx"
 )
 
@@ -122,7 +125,26 @@ func (m *Middleware) Logger() echo.MiddlewareFunc {
 
 // RequestID returns a X-Request-ID middleware.
 func (m *Middleware) RequestID() echo.MiddlewareFunc {
-	return middleware.RequestID()
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			if m.Skipper(c) {
+				return next(c)
+			}
+
+			req := c.Request()
+			res := c.Response()
+			rid := req.Header.Get(echo.HeaderXRequestID)
+			if rid == "" {
+				rid = uuid.New().String()
+			}
+			res.Header().Set(echo.HeaderXRequestID, rid)
+
+			ctx := context.WithValue(c.Request().Context(), contextx.ID, rid)
+			c.Request().WithContext(ctx)
+
+			return next(c)
+		}
+	}
 }
 
 func (m *Middleware) LogRequestInfo() echo.MiddlewareFunc {

@@ -79,21 +79,21 @@ func (l *logger) LogMode(level glogger.LogLevel) glogger.Interface {
 // Info print info
 func (l logger) Info(ctx context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= glogger.Info {
-		WithID(ctxID(ctx)).Printf(msg, data...)
+		WithID(contextx.GetID(ctx)).Printf(msg, data...)
 	}
 }
 
 // Warn print warn messages
 func (l logger) Warn(ctx context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= glogger.Warn {
-		WithID(ctxID(ctx)).Printf(msg, data...)
+		WithID(contextx.GetID(ctx)).Printf(msg, data...)
 	}
 }
 
 // Error print error messages
 func (l logger) Error(ctx context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= glogger.Error {
-		WithID(ctxID(ctx)).Printf(msg, data...)
+		WithID(contextx.GetID(ctx)).Printf(msg, data...)
 	}
 }
 
@@ -104,25 +104,17 @@ func (l logger) Trace(ctx context.Context, begin time.Time, fc func() (string, i
 		switch {
 		case err != nil && l.LogLevel >= glogger.Error:
 			sql, rows := fc()
-			WithID(ctxID(ctx)).Printf(l.traceErrStr, utils.FileWithLineNum(), err, float64(elapsed.Nanoseconds())/1e6, rows, sql)
+			WithID(contextx.GetID(ctx)).Printf(l.traceErrStr, utils.FileWithLineNum(), err, float64(elapsed.Nanoseconds())/1e6, rows, sql)
 		case elapsed > l.SlowThreshold && l.SlowThreshold != 0 && l.LogLevel >= glogger.Warn:
 			sql, rows := fc()
-			WithID(ctxID(ctx)).Printf(l.traceWarnStr, utils.FileWithLineNum(), float64(elapsed.Nanoseconds())/1e6, rows, sql)
+			WithID(contextx.GetID(ctx)).Printf(l.traceWarnStr, utils.FileWithLineNum(), float64(elapsed.Nanoseconds())/1e6, rows, sql)
 		case l.LogLevel >= glogger.Info:
 			sql, rows := fc()
-			WithID(ctxID(ctx)).Printf(l.traceStr, utils.FileWithLineNum(), float64(elapsed.Nanoseconds())/1e6, rows, sql)
+			WithID(contextx.GetID(ctx)).Printf(l.traceStr, utils.FileWithLineNum(), float64(elapsed.Nanoseconds())/1e6, rows, sql)
 		}
 	}
 }
 
 func WithCtxID(id string) context.Context {
 	return context.WithValue(context.Background(), contextx.ID, id)
-}
-
-func ctxID(ctx context.Context) string {
-	if id, ok := ctx.Value(contextx.ID).(string); ok {
-		return id
-	}
-
-	return ""
 }

@@ -1,4 +1,4 @@
-package client
+package httpx
 
 // Header const
 const (

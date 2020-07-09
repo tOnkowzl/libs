@@ -16,7 +16,7 @@ type Client struct {
 	BaseURL    string
 }
 
-func NewClient(conf Config) (*Client, error) {
+func NewClient(conf ClientConfig) (*Client, error) {
 	if conf.BaseURL == "" {
 		return nil, errors.New("require base url")
 	}

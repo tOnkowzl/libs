@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// Config for service
-type Config struct {
+// ClientConfig for service
+type ClientConfig struct {
 	MaxConns           int
 	InsecureSkipVerify bool
 	BasicAuth          BasicAuth

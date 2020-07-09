@@ -25,6 +25,9 @@ var (
 	DefaultSkipper = func(c echo.Context) bool {
 		return c.Path() == "/builds"
 	}
+
+	UnlimitLogRequestBody  bool
+	UnlimitLogResponseBody bool
 )
 
 const (
@@ -36,28 +39,13 @@ const (
 // Skipper skip middleware
 type Skipper func(c echo.Context) bool
 
-type Middleware struct {
-	Service string
-	Skipper Skipper
-
-	UnlimitLogRequestBody  bool
-	UnlimitLogResponseBody bool
-}
-
-func New(service string) *Middleware {
-	return &Middleware{
-		Service: service,
-		Skipper: DefaultSkipper,
-	}
-}
-
 // Recover returns a middleware which recovers from panics anywhere in the chain
 // and handles the control to the centralized HTTPErrorHandler.
-func (m *Middleware) Recover() echo.MiddlewareFunc {
-	return m.RecoverWithConfig(middleware.DefaultRecoverConfig)
+func Recover() echo.MiddlewareFunc {
+	return RecoverWithConfig(middleware.DefaultRecoverConfig)
 }
 
-func (m *Middleware) RecoverWithConfig(config middleware.RecoverConfig) echo.MiddlewareFunc {
+func RecoverWithConfig(config middleware.RecoverConfig) echo.MiddlewareFunc {
 	// Defaults
 	if config.Skipper == nil {
 		config.Skipper = middleware.DefaultRecoverConfig.Skipper
@@ -81,7 +69,7 @@ func (m *Middleware) RecoverWithConfig(config middleware.RecoverConfig) echo.Mid
 					stack := make([]byte, config.StackSize)
 					length := runtime.Stack(stack, !config.DisableStackAll)
 					if !config.DisablePrintStack {
-						logx.WithID(m.XRequestID(c)).Errorf("[PANIC RECOVER] %v %s\n", err, stack[:length])
+						logx.WithContext(c.Request().Context()).Errorf("[PANIC RECOVER] %v %s\n", err, stack[:length])
 					}
 					c.Error(err)
 				}
@@ -92,10 +80,10 @@ func (m *Middleware) RecoverWithConfig(config middleware.RecoverConfig) echo.Mid
 }
 
 // Logger log request information
-func (m *Middleware) Logger() echo.MiddlewareFunc {
+func Logger() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) (err error) {
-			if m.Skipper(c) {
+			if DefaultSkipper(c) {
 				return next(c)
 			}
 
@@ -107,14 +95,13 @@ func (m *Middleware) Logger() echo.MiddlewareFunc {
 				c.Error(err)
 			}
 
-			logx.WithID(m.XRequestID(c)).WithFields(logrus.Fields{
+			logx.WithContext(c.Request().Context()).WithFields(logrus.Fields{
 				"method":    req.Method,
 				"host":      req.Host,
 				"path_uri":  req.RequestURI,
 				"remote_ip": c.RealIP(),
 				"status":    res.Status,
 				"duration":  time.Since(start).String,
-				"service":   m.Service,
 			}).Info(logKeywordDontChange)
 
 			return
@@ -123,10 +110,10 @@ func (m *Middleware) Logger() echo.MiddlewareFunc {
 }
 
 // RequestID returns a X-Request-ID middleware.
-func (m *Middleware) RequestID() echo.MiddlewareFunc {
+func RequestID() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if m.Skipper(c) {
+			if DefaultSkipper(c) {
 				return next(c)
 			}
 
@@ -139,17 +126,17 @@ func (m *Middleware) RequestID() echo.MiddlewareFunc {
 			res.Header().Set(echo.HeaderXRequestID, rid)
 
 			ctx := context.WithValue(c.Request().Context(), contextx.ID, rid)
-			c.Request().WithContext(ctx)
+			c.SetRequest(c.Request().WithContext(ctx))
 
 			return next(c)
 		}
 	}
 }
 
-func (m *Middleware) LogRequestInfo() echo.MiddlewareFunc {
+func LogRequestInfo() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if m.Skipper(c) {
+			if DefaultSkipper(c) {
 				return next(c)
 			}
 
@@ -160,13 +147,13 @@ func (m *Middleware) LogRequestInfo() echo.MiddlewareFunc {
 			c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(b))
 
 			var body string
-			if m.UnlimitLogRequestBody {
+			if UnlimitLogRequestBody {
 				body = string(b)
 			} else {
 				body = logx.LimitMSG(b)
 			}
 
-			logx.WithID(m.XRequestID(c)).WithFields(logrus.Fields{
+			logx.WithContext(c.Request().Context()).WithFields(logrus.Fields{
 				"header": c.Request().Header,
 				"body":   body,
 			}).Info(requestInfoMsg)
@@ -176,10 +163,10 @@ func (m *Middleware) LogRequestInfo() echo.MiddlewareFunc {
 	}
 }
 
-func (m *Middleware) LogResponseInfo() echo.MiddlewareFunc {
+func LogResponseInfo() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if m.Skipper(c) {
+			if DefaultSkipper(c) {
 				return next(c)
 			}
 
@@ -195,13 +182,13 @@ func (m *Middleware) LogResponseInfo() echo.MiddlewareFunc {
 			b := resBody.Bytes()
 
 			var body string
-			if m.UnlimitLogResponseBody {
+			if UnlimitLogResponseBody {
 				body = string(b)
 			} else {
 				body = logx.LimitMSG(b)
 			}
 
-			logx.WithID(m.XRequestID(c)).WithFields(logrus.Fields{
+			logx.WithContext(c.Request().Context()).WithFields(logrus.Fields{
 				"header": c.Response().Header(),
 				"body":   body,
 			}).Info(responseInfoMsg)
@@ -211,7 +198,7 @@ func (m *Middleware) LogResponseInfo() echo.MiddlewareFunc {
 	}
 }
 
-func (m *Middleware) Build(buildstamp, githash string) echo.MiddlewareFunc {
+func Build(buildstamp, githash string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			if c.Path() == "/builds" {
@@ -223,10 +210,6 @@ func (m *Middleware) Build(buildstamp, githash string) echo.MiddlewareFunc {
 			return next(c)
 		}
 	}
-}
-
-func (m *Middleware) XRequestID(c echo.Context) string {
-	return c.Response().Header().Get(echo.HeaderXRequestID)
 }
 
 type bodyDumpResponseWriter struct {

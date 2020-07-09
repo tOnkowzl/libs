@@ -42,11 +42,7 @@ func LimitMSG(b []byte) string {
 }
 
 func WithContext(ctx context.Context) logrus.FieldLogger {
-	return WithID(contextx.GetID(ctx))
-}
-
-func WithID(id string) logrus.FieldLogger {
-	return logrus.WithField("id", id)
+	return logrus.WithField("id", contextx.GetID(ctx))
 }
 
 func WithField(key string, value interface{}) *logrus.Entry {

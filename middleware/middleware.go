@@ -188,6 +188,10 @@ func Health() echo.MiddlewareFunc {
 	}
 }
 
+func JWT(i interface{}) echo.MiddlewareFunc {
+	return middleware.JWT(i)
+}
+
 type bodyDumpResponseWriter struct {
 	io.Writer
 	http.ResponseWriter

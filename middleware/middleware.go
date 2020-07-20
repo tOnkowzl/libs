@@ -192,6 +192,10 @@ func JWT(i interface{}) echo.MiddlewareFunc {
 	return middleware.JWT(i)
 }
 
+func CORS() echo.MiddlewareFunc {
+	return middleware.CORS()
+}
+
 type bodyDumpResponseWriter struct {
 	io.Writer
 	http.ResponseWriter

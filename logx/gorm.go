@@ -70,9 +70,8 @@ type logger struct {
 
 // LogMode log mode
 func (l *logger) LogMode(level glogger.LogLevel) glogger.Interface {
-	newlogger := *l
-	newlogger.LogLevel = level
-	return &newlogger
+	l.LogLevel = level
+	return l
 }
 
 // Info print info

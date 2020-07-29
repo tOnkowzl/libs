@@ -12,6 +12,10 @@ const (
 	ID Key = iota
 )
 
+func AddID(ctx context.Context) context.Context {
+	return context.WithValue(ctx, ID, uuid.New().String())
+}
+
 func GetID(ctx context.Context) string {
 	if id, ok := ctx.Value(ID).(string); ok {
 		return id

@@ -196,6 +196,10 @@ func CORS() echo.MiddlewareFunc {
 	return middleware.CORS()
 }
 
+func Secure() echo.MiddlewareFunc {
+	return middleware.Secure()
+}
+
 type bodyDumpResponseWriter struct {
 	io.Writer
 	http.ResponseWriter

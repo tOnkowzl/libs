@@ -24,6 +24,10 @@ func GetID(ctx context.Context) string {
 	return ""
 }
 
+func SetID(ctx context.Context, id string) context.Context {
+	return context.WithValue(ctx, ID, id)
+}
+
 func WithID() context.Context {
 	return context.WithValue(context.Background(), ID, uuid.New().String())
 }

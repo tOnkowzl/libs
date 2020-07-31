@@ -3,7 +3,6 @@ package middleware
 import (
 	"bufio"
 	"bytes"
-	"context"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -94,45 +93,15 @@ func RequestID() echo.MiddlewareFunc {
 			}
 			res.Header().Set(echo.HeaderXRequestID, rid)
 
-			ctx := context.WithValue(c.Request().Context(), contextx.ID, rid)
-			c.SetRequest(c.Request().WithContext(ctx))
+			ctx := contextx.SetID(req.Context(), rid)
+			c.SetRequest(req.WithContext(ctx))
 
 			return next(c)
 		}
 	}
 }
 
-func LogRequestInfo() echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			if DefaultSkipper(c) {
-				return next(c)
-			}
-
-			b := []byte{}
-			if c.Request().Body != nil {
-				b, _ = ioutil.ReadAll(c.Request().Body)
-			}
-			c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(b))
-
-			var body string
-			if UnlimitLogRequestBody {
-				body = string(b)
-			} else {
-				body = logx.LimitMSG(b)
-			}
-
-			logx.WithContext(c.Request().Context()).WithFields(logrus.Fields{
-				"header": c.Request().Header,
-				"body":   body,
-			}).Info(requestInfoMsg)
-
-			return next(c)
-		}
-	}
-}
-
-func LogResponseInfo() echo.MiddlewareFunc {
+func Logger() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			if DefaultSkipper(c) {
@@ -142,27 +111,44 @@ func LogResponseInfo() echo.MiddlewareFunc {
 			req := c.Request()
 			res := c.Response()
 
+			b := []byte{}
+			if req.Body != nil {
+				b, _ = ioutil.ReadAll(req.Body)
+			}
+			req.Body = ioutil.NopCloser(bytes.NewBuffer(b))
+
+			var body string
+			if UnlimitLogRequestBody {
+				body = string(b)
+			} else {
+				body = logx.LimitMSG(b)
+			}
+
+			logx.WithContext(req.Context()).WithFields(logrus.Fields{
+				"header": req.Header,
+				"body":   body,
+			}).Info(requestInfoMsg)
+
 			resBody := new(bytes.Buffer)
-			mw := io.MultiWriter(c.Response().Writer, resBody)
-			writer := &bodyDumpResponseWriter{Writer: mw, ResponseWriter: c.Response().Writer}
-			c.Response().Writer = writer
+			mw := io.MultiWriter(res.Writer, resBody)
+			writer := &bodyDumpResponseWriter{Writer: mw, ResponseWriter: res.Writer}
+			res.Writer = writer
 
 			start := time.Now()
 			if err := next(c); err != nil {
 				c.Error(err)
 			}
 
-			b := resBody.Bytes()
+			b = resBody.Bytes()
 
-			var body string
 			if UnlimitLogResponseBody {
 				body = string(b)
 			} else {
 				body = logx.LimitMSG(b)
 			}
 
-			logx.WithContext(c.Request().Context()).WithFields(logrus.Fields{
-				"header":    c.Response().Header(),
+			logx.WithContext(req.Context()).WithFields(logrus.Fields{
+				"header":    res.Header(),
 				"body":      body,
 				"method":    req.Method,
 				"host":      req.Host,
@@ -172,7 +158,7 @@ func LogResponseInfo() echo.MiddlewareFunc {
 				"duration":  time.Since(start).String(),
 			}).Info(responseInfoMsg)
 
-			return nil
+			return next(c)
 		}
 	}
 }

@@ -42,7 +42,7 @@ func (p *Produce) Produce(ctx context.Context, topic string, i interface{}) erro
 	})
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{
-		"value":     string(b),
+		"value":     logx.LimitMSG(b),
 		"topic":     topic,
 		"partition": partition,
 		"offset":    offset,

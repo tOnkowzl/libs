@@ -26,7 +26,7 @@ type Pub struct {
 	ProjectID string
 }
 
-func New(cfg Config) *Pub {
+func NewPub(cfg Config) *Pub {
 	ctx, cancel := context.WithTimeout(context.Background(), cfg.Timeout)
 	defer cancel()
 

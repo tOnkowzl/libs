@@ -158,7 +158,7 @@ func Logger() echo.MiddlewareFunc {
 				"duration":  time.Since(start).String(),
 			}).Info(responseInfoMsg)
 
-			return next(c)
+			return nil
 		}
 	}
 }

@@ -5,17 +5,12 @@ import (
 	"os"
 
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"github.com/tOnkowzl/libs/contextx"
 )
 
 const (
 	limitMSG = 5000
 )
-
-func init() {
-	Init(viper.GetString("log.level"), viper.GetString("log.env"))
-}
 
 func StandardLogger() *logrus.Logger {
 	return logrus.StandardLogger()

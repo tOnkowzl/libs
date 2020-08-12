@@ -1,4 +1,4 @@
-package kafkax
+package saramax
 
 import (
 	"context"

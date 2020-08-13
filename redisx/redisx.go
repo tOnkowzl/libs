@@ -11,17 +11,13 @@ import (
 	"github.com/tOnkowzl/libs/logx"
 )
 
-type Options struct {
-	redis.Options
-}
-
 type Client struct {
 	client *redis.Client
 }
 
-func NewClient(opt *Options) *Client {
+func NewClient(opt *redis.Options) *Client {
 	return &Client{
-		client: redis.NewClient(&opt.Options),
+		client: redis.NewClient(opt),
 	}
 }
 

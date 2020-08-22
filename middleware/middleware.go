@@ -110,8 +110,9 @@ func Logger() echo.MiddlewareFunc {
 
 			req := c.Request()
 			res := c.Response()
+			ctx := req.Context()
 
-			b := []byte{}
+			b := make([]byte, 0)
 			if req.Body != nil {
 				b, _ = ioutil.ReadAll(req.Body)
 			}
@@ -124,7 +125,7 @@ func Logger() echo.MiddlewareFunc {
 				body = logx.LimitMSG(b)
 			}
 
-			logx.WithContext(req.Context()).WithFields(logrus.Fields{
+			logx.WithContext(ctx).WithFields(logrus.Fields{
 				"header": req.Header,
 				"body":   body,
 			}).Info(requestInfoMsg)
@@ -147,7 +148,7 @@ func Logger() echo.MiddlewareFunc {
 				body = logx.LimitMSG(b)
 			}
 
-			logx.WithContext(req.Context()).WithFields(logrus.Fields{
+			logx.WithContext(ctx).WithFields(logrus.Fields{
 				"header":    res.Header(),
 				"body":      body,
 				"method":    req.Method,

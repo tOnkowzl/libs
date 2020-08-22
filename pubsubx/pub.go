@@ -48,7 +48,7 @@ func (p *Pub) Publish(ctx context.Context, i interface{}) error {
 		"topicID":   p.TopicID,
 		"projectID": p.ProjectID,
 		"value":     logx.LimitMSG(b),
-	}).Info("publish information")
+	}).Info("pub information")
 
 	pubCtx, cancel := context.WithTimeout(context.Background(), p.Timeout)
 	defer cancel()

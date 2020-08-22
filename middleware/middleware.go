@@ -29,11 +29,6 @@ var (
 	UnlimitLogResponseBody bool
 )
 
-const (
-	requestInfoMsg  = "echo request information"
-	responseInfoMsg = "echo response information"
-)
-
 // Skipper skip middleware
 type Skipper func(c echo.Context) bool
 
@@ -128,7 +123,7 @@ func Logger() echo.MiddlewareFunc {
 			logx.WithContext(ctx).WithFields(logrus.Fields{
 				"header": req.Header,
 				"body":   body,
-			}).Info(requestInfoMsg)
+			}).Info("echo request information")
 
 			resBody := new(bytes.Buffer)
 			mw := io.MultiWriter(res.Writer, resBody)
@@ -157,7 +152,7 @@ func Logger() echo.MiddlewareFunc {
 				"remote_ip": c.RealIP(),
 				"status":    res.Status,
 				"duration":  time.Since(start).String(),
-			}).Info(responseInfoMsg)
+			}).Info("echo response information")
 
 			return nil
 		}

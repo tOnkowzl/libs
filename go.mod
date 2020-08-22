@@ -12,5 +12,5 @@ require (
 	github.com/sirupsen/logrus v1.6.0
 	github.com/stretchr/testify v1.6.1
 	google.golang.org/api v0.30.0
-	gorm.io/gorm v0.2.29
+	gorm.io/gorm v0.2.35
 )

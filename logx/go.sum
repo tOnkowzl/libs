@@ -17,5 +17,5 @@ github.com/tOnkowzl/libs/contextx v0.0.0 h1:WdU9cFr0tgc/2scBHNI3LoDaZdtwwwkJpLHW
 github.com/tOnkowzl/libs/contextx v0.0.0/go.mod h1:pAECKwZshCSVzB5sHPXlwZBswQjqHpGsGIy/1a7CN5I=
 golang.org/x/sys v0.0.0-20190422165155-953cdadca894 h1:Cz4ceDQGXuKRnVBDTS23GTn/pU5OE2C0WrNTOYK1Uuc=
 golang.org/x/sys v0.0.0-20190422165155-953cdadca894/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
-gorm.io/gorm v0.2.38 h1:zHrkh0Xckf78itpEmA4MdjgU9HcelE3gG5FeEb+MQYM=
-gorm.io/gorm v0.2.38/go.mod h1:0HFTzE/SqkGTzK6TlDPPQbAYCluiVvhzoA1+aVyzenw=
+gorm.io/gorm v1.20.0 h1:qfIlyaZvrF7kMWY3jBdEBXkXJ2M5MFYMTppjILxS3fQ=
+gorm.io/gorm v1.20.0/go.mod h1:0HFTzE/SqkGTzK6TlDPPQbAYCluiVvhzoA1+aVyzenw=

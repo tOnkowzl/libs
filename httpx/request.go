@@ -40,6 +40,10 @@ func (r *Request) init(ctx context.Context, baseURL string) error {
 }
 
 func (r *Request) marshalBody() error {
+	if r.Body == nil {
+		return nil
+	}
+
 	if s, ok := r.Body.(string); ok {
 		r.body = []byte(s)
 		return nil

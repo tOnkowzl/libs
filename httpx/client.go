@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
-	"errors"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -17,10 +16,6 @@ type Client struct {
 }
 
 func NewClient(conf ClientConfig) (*Client, error) {
-	if conf.BaseURL == "" {
-		return nil, errors.New("require base url")
-	}
-
 	if conf.HTTPClient == nil {
 		conf.HTTPClient = &http.Client{
 			Transport: &http.Transport{
@@ -63,7 +58,7 @@ func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 
 	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		req.logResponseInfo(ctx, err, nil, "", nil)
+		req.logResponseInfo(ctx, err, nil, duration, res)
 		return nil, err
 	}
 

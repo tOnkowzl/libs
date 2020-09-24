@@ -120,13 +120,11 @@ func (r *Request) logResponseInfo(ctx context.Context, err error, b []byte, dura
 	if r.HideLogResponse {
 		return
 	}
-
-	if err != nil {
-		logx.WithContext(ctx).WithFields(logrus.Fields{
-			"url":   r.fullURL,
-			"error": err,
-		}).Info("client do response information")
-		return
+	if b == nil {
+		b = []byte{}
+	}
+	if res == nil {
+		res = &http.Response{}
 	}
 
 	var body string
@@ -141,6 +139,7 @@ func (r *Request) logResponseInfo(ctx context.Context, err error, b []byte, dura
 		"status":   res.Status,
 		"header":   res.Header,
 		"body":     body,
+		"error":    err,
 		"url":      r.fullURL,
-	}).Info("client do response info")
+	}).Info("client do response information")
 }

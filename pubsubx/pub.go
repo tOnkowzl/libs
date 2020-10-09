@@ -15,7 +15,6 @@ type PubConfig struct {
 	Client    *pubsub.Client
 	Timeout   time.Duration
 	ProjectID string
-	TopicID   string
 }
 
 type Pub struct {

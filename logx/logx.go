@@ -8,8 +8,18 @@ import (
 	"github.com/tOnkowzl/libs/contextx"
 )
 
+type Severity string
+
 const (
 	limitMSG = 5000
+
+	severityKey = "severity"
+
+	LevelInfo      Severity = "INFO"
+	LevelDebug     Severity = "DEBUG"
+	LevelWarn      Severity = "WARNING"
+	LevelError     Severity = "ERROR"
+	LevelEmergency Severity = "EMERGENCY"
 )
 
 func StandardLogger() *logrus.Logger {
@@ -45,6 +55,13 @@ func WithContext(ctx context.Context) logrus.FieldLogger {
 	return logrus.WithField("id", contextx.GetID(ctx))
 }
 
+func WithSeverity(ctx context.Context, level Severity) logrus.FieldLogger {
+	return logrus.WithFields(logrus.Fields{
+		"id":        contextx.GetID(ctx),
+		severityKey: level,
+	})
+}
+
 func WithField(key string, value interface{}) *logrus.Entry {
 	return logrus.WithField(key, value)
 }
@@ -53,102 +70,98 @@ func WithFields(fields logrus.Fields) *logrus.Entry {
 	return logrus.WithFields(fields)
 }
 
-func WithError(err error) *logrus.Entry {
-	return logrus.WithError(err)
-}
-
 func Debugf(format string, args ...interface{}) {
-	logrus.Debugf(format, args...)
+	logrus.WithField(severityKey, LevelDebug).Debugf(format, args...)
 }
 
 func Infof(format string, args ...interface{}) {
-	logrus.Infof(format, args...)
+	logrus.WithField(severityKey, LevelInfo).Infof(format, args...)
 }
 
 func Printf(format string, args ...interface{}) {
-	logrus.Printf(format, args...)
+	logrus.WithField(severityKey, LevelInfo).Printf(format, args...)
 }
 
 func Warnf(format string, args ...interface{}) {
-	logrus.Warnf(format, args...)
+	logrus.WithField(severityKey, LevelWarn).Warnf(format, args...)
 }
 
 func Warningf(format string, args ...interface{}) {
-	logrus.Warningf(format, args...)
+	logrus.WithField(severityKey, LevelWarn).Warningf(format, args...)
 }
 
 func Errorf(format string, args ...interface{}) {
-	logrus.Errorf(format, args...)
+	logrus.WithField(severityKey, LevelError).Errorf(format, args...)
 }
 
 func Fatalf(format string, args ...interface{}) {
-	logrus.Fatalf(format, args...)
+	logrus.WithField(severityKey, LevelEmergency).Fatalf(format, args...)
 }
 
 func Panicf(format string, args ...interface{}) {
-	logrus.Panicf(format, args...)
+	logrus.WithField(severityKey, LevelEmergency).Panicf(format, args...)
 }
 
 func Debug(args ...interface{}) {
-	logrus.Debug(args...)
+	logrus.WithField(severityKey, LevelDebug).Debug(args...)
 }
 
 func Info(args ...interface{}) {
-	logrus.Info(args...)
+	logrus.WithField(severityKey, LevelInfo).Info(args...)
 }
 
 func Print(args ...interface{}) {
-	logrus.Print(args...)
+	logrus.WithField(severityKey, LevelInfo).Print(args...)
 }
 
 func Warn(args ...interface{}) {
-	logrus.Warn(args...)
+	logrus.WithField(severityKey, LevelWarn).Warn(args...)
 }
 
 func Warning(args ...interface{}) {
-	logrus.Warning(args...)
+	logrus.WithField(severityKey, LevelWarn).Warning(args...)
 }
 
 func Error(args ...interface{}) {
-	logrus.Error(args...)
+	logrus.WithField(severityKey, LevelError).Error(args...)
 }
 
 func Fatal(args ...interface{}) {
-	logrus.Fatal(args...)
+	logrus.WithField(severityKey, LevelEmergency).Fatal(args...)
 }
 
 func Panic(args ...interface{}) {
-	logrus.Panic(args...)
+	logrus.WithField(severityKey, LevelEmergency).Panic(args...)
 }
 
 func Debugln(args ...interface{}) {
-	logrus.Debugln(args...)
+	logrus.WithField(severityKey, LevelDebug).Debugln(args...)
 }
 
 func Infoln(args ...interface{}) {
-	logrus.Infoln(args...)
+	logrus.WithField(severityKey, LevelInfo).Infoln(args...)
 }
 
 func Println(args ...interface{}) {
-	logrus.Println(args...)
+	logrus.WithField(severityKey, LevelInfo).Println(args...)
 }
 
 func Warnln(args ...interface{}) {
-	logrus.Warnln(args...)
+	logrus.WithField(severityKey, LevelWarn).Warnln(args...)
 }
 
 func Warningln(args ...interface{}) {
-	logrus.Warningln(args...)
+	logrus.WithField(severityKey, LevelWarn).Warningln(args...)
 }
 
 func Errorln(args ...interface{}) {
-	logrus.Errorln(args...)
+	logrus.WithField(severityKey, LevelError).Errorln(args...)
 }
 
 func Fatalln(args ...interface{}) {
-	logrus.Fatalln(args...)
+	logrus.WithField(severityKey, LevelEmergency).Fatalln(args...)
 }
 
 func Panicln(args ...interface{}) {
-	logrus.Panicln(args...)
+	logrus.WithField(severityKey, LevelEmergency).Panicln(args...)
 }

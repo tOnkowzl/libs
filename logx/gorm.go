@@ -85,21 +85,21 @@ func (l *logger) LogMode(level glogger.LogLevel) glogger.Interface {
 // Info print info
 func (l logger) Info(ctx context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= glogger.Info {
-		WithContext(ctx).Printf(msg, append([]interface{}{""}, data...)...)
+		WithContext(ctx).Printf(msg, data...)
 	}
 }
 
 // Warn print warn messages
 func (l logger) Warn(ctx context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= glogger.Warn {
-		WithContext(ctx).Printf(msg, append([]interface{}{""}, data...)...)
+		WithContext(ctx).Printf(msg, data...)
 	}
 }
 
 // Error print error messages
 func (l logger) Error(ctx context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= glogger.Error {
-		WithContext(ctx).Printf(msg, append([]interface{}{""}, data...)...)
+		WithContext(ctx).Printf(msg, data...)
 	}
 }
 

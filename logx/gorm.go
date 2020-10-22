@@ -33,7 +33,7 @@ var (
 	DefaultGormLogger = New(log.New(os.Stdout, "\r\n", log.LstdFlags), glogger.Config{
 		SlowThreshold: 200 * time.Millisecond,
 		LogLevel:      glogger.Info,
-		Colorful:      true,
+		Colorful:      false,
 	})
 	Recorder = traceRecorder{Interface: DefaultGormLogger}
 )

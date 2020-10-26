@@ -85,21 +85,21 @@ func (l *logger) LogMode(level glogger.LogLevel) glogger.Interface {
 // Info print info
 func (l logger) Info(ctx context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= glogger.Info {
-		WithContext(ctx).Printf(msg, data...)
+		WithSeverity(ctx, LevelInfo).Printf(msg, data...)
 	}
 }
 
 // Warn print warn messages
 func (l logger) Warn(ctx context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= glogger.Warn {
-		WithContext(ctx).Printf(msg, data...)
+		WithSeverity(ctx, LevelWarn).Printf(msg, data...)
 	}
 }
 
 // Error print error messages
 func (l logger) Error(ctx context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= glogger.Error {
-		WithContext(ctx).Printf(msg, data...)
+		WithSeverity(ctx, LevelError).Printf(msg, data...)
 	}
 }
 
@@ -111,24 +111,24 @@ func (l logger) Trace(ctx context.Context, begin time.Time, fc func() (string, i
 		case err != nil && l.LogLevel >= glogger.Error:
 			sql, rows := fc()
 			if rows == -1 {
-				WithContext(ctx).Printf(l.traceErrStr, "", err, float64(elapsed.Nanoseconds())/1e6, "-", sql)
+				WithSeverity(ctx, LevelError).Printf(l.traceErrStr, "", err, float64(elapsed.Nanoseconds())/1e6, "-", sql)
 			} else {
-				WithContext(ctx).Printf(l.traceErrStr, "", err, float64(elapsed.Nanoseconds())/1e6, rows, sql)
+				WithSeverity(ctx, LevelError).Printf(l.traceErrStr, "", err, float64(elapsed.Nanoseconds())/1e6, rows, sql)
 			}
 		case elapsed > l.SlowThreshold && l.SlowThreshold != 0 && l.LogLevel >= glogger.Warn:
 			sql, rows := fc()
 			slowLog := fmt.Sprintf("SLOW SQL >= %v", l.SlowThreshold)
 			if rows == -1 {
-				WithContext(ctx).Printf(l.traceWarnStr, "", slowLog, float64(elapsed.Nanoseconds())/1e6, "-", sql)
+				WithSeverity(ctx, LevelWarn).Printf(l.traceWarnStr, "", slowLog, float64(elapsed.Nanoseconds())/1e6, "-", sql)
 			} else {
-				WithContext(ctx).Printf(l.traceWarnStr, "", slowLog, float64(elapsed.Nanoseconds())/1e6, rows, sql)
+				WithSeverity(ctx, LevelWarn).Printf(l.traceWarnStr, "", slowLog, float64(elapsed.Nanoseconds())/1e6, rows, sql)
 			}
 		case l.LogLevel >= glogger.Info:
 			sql, rows := fc()
 			if rows == -1 {
-				WithContext(ctx).Printf(l.traceStr, "", float64(elapsed.Nanoseconds())/1e6, "-", sql)
+				WithSeverity(ctx, LevelInfo).Printf(l.traceStr, "", float64(elapsed.Nanoseconds())/1e6, "-", sql)
 			} else {
-				WithContext(ctx).Printf(l.traceStr, "", float64(elapsed.Nanoseconds())/1e6, rows, sql)
+				WithSeverity(ctx, LevelInfo).Printf(l.traceStr, "", float64(elapsed.Nanoseconds())/1e6, rows, sql)
 			}
 		}
 	}

@@ -11,7 +11,7 @@ import (
 type Severity string
 
 const (
-	limitMSG = 5000
+	limitMSG = 3000
 
 	severityKey = "severity"
 

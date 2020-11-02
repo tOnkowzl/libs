@@ -85,21 +85,21 @@ func (l *logger) LogMode(level glogger.LogLevel) glogger.Interface {
 // Info print info
 func (l logger) Info(ctx context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= glogger.Info {
-		WithSeverityInfo(ctx).Printf(msg, data...)
+		WithSeverityInfo(ctx).Infof(msg, data...)
 	}
 }
 
 // Warn print warn messages
 func (l logger) Warn(ctx context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= glogger.Warn {
-		WithSeverityWarn(ctx).Printf(msg, data...)
+		WithSeverityWarn(ctx).Warnf(msg, data...)
 	}
 }
 
 // Error print error messages
 func (l logger) Error(ctx context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= glogger.Error {
-		WithSeverityError(ctx).Printf(msg, data...)
+		WithSeverityError(ctx).Errorf(msg, data...)
 	}
 }
 

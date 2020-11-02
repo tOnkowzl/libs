@@ -117,7 +117,7 @@ func Logger() echo.MiddlewareFunc {
 			if UnlimitLogRequestBody {
 				body = string(b)
 			} else {
-				body = logx.LimitMSG(b)
+				body = logx.LimitMSGByte(b)
 			}
 
 			logx.WithContext(ctx).WithFields(logrus.Fields{
@@ -140,7 +140,7 @@ func Logger() echo.MiddlewareFunc {
 			if UnlimitLogResponseBody {
 				body = string(b)
 			} else {
-				body = logx.LimitMSG(b)
+				body = logx.LimitMSGByte(b)
 			}
 
 			logx.WithContext(ctx).WithFields(logrus.Fields{

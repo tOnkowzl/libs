@@ -7,8 +7,6 @@ import (
 	"log"
 	"os"
 	"time"
-
-	glogger "gorm.io/gorm/logger"
 )
 
 // Colors
@@ -27,17 +25,47 @@ const (
 	YellowBold  = "\033[33;1m"
 )
 
+// LogLevel
+type LogLevel int
+
+const (
+	SilentLevel LogLevel = iota + 1
+	ErrorLevel
+	WarnLevel
+	InfoLevel
+)
+
+// Writer log writer interface
+type Writer interface {
+	Printf(string, ...interface{})
+}
+
+type Config struct {
+	SlowThreshold time.Duration
+	Colorful      bool
+	LogLevel      LogLevel
+}
+
+// Interface logger interface
+type Interface interface {
+	LogMode(LogLevel) Interface
+	Info(context.Context, string, ...interface{})
+	Warn(context.Context, string, ...interface{})
+	Error(context.Context, string, ...interface{})
+	Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error)
+}
+
 var (
-	Discard           = New(log.New(ioutil.Discard, "", log.LstdFlags), glogger.Config{})
-	DefaultGormLogger = New(log.New(os.Stdout, "\r\n", log.LstdFlags), glogger.Config{
+	Discard           = New(log.New(ioutil.Discard, "", log.LstdFlags), Config{})
+	DefaultGormLogger = New(log.New(os.Stdout, "\r\n", log.LstdFlags), Config{
 		SlowThreshold: 200 * time.Millisecond,
-		LogLevel:      glogger.Info,
+		LogLevel:      InfoLevel,
 		Colorful:      false,
 	})
 	Recorder = traceRecorder{Interface: DefaultGormLogger}
 )
 
-func New(writer glogger.Writer, config glogger.Config) glogger.Interface {
+func New(writer Writer, config Config) Interface {
 	var (
 		infoStr      = "%s\n[info] "
 		warnStr      = "%s\n[warn] "
@@ -69,14 +97,14 @@ func New(writer glogger.Writer, config glogger.Config) glogger.Interface {
 }
 
 type logger struct {
-	glogger.Writer
-	glogger.Config
+	Writer
+	Config
 	infoStr, warnStr, errStr            string
 	traceStr, traceErrStr, traceWarnStr string
 }
 
 // LogMode log mode
-func (l *logger) LogMode(level glogger.LogLevel) glogger.Interface {
+func (l *logger) LogMode(level LogLevel) Interface {
 	newlogger := *l
 	newlogger.LogLevel = level
 	return &newlogger
@@ -84,7 +112,7 @@ func (l *logger) LogMode(level glogger.LogLevel) glogger.Interface {
 
 // Info print info
 func (l logger) Info(ctx context.Context, msg string, data ...interface{}) {
-	if l.LogLevel >= glogger.Info {
+	if l.LogLevel >= InfoLevel {
 		for k := range data {
 			if s, ok := data[k].(string); ok {
 				data[k] = LimitMSGString(s)
@@ -96,14 +124,14 @@ func (l logger) Info(ctx context.Context, msg string, data ...interface{}) {
 
 // Warn print warn messages
 func (l logger) Warn(ctx context.Context, msg string, data ...interface{}) {
-	if l.LogLevel >= glogger.Warn {
+	if l.LogLevel >= WarnLevel {
 		WithSeverityWarn(ctx).Warnf(msg, data...)
 	}
 }
 
 // Error print error messages
 func (l logger) Error(ctx context.Context, msg string, data ...interface{}) {
-	if l.LogLevel >= glogger.Error {
+	if l.LogLevel >= ErrorLevel {
 		WithSeverityError(ctx).Errorf(msg, data...)
 	}
 }
@@ -113,14 +141,14 @@ func (l logger) Trace(ctx context.Context, begin time.Time, fc func() (string, i
 	if l.LogLevel > 0 {
 		elapsed := time.Since(begin)
 		switch {
-		case err != nil && l.LogLevel >= glogger.Error:
+		case err != nil && l.LogLevel >= ErrorLevel:
 			sql, rows := fc()
 			if rows == -1 {
 				WithSeverityError(ctx).Printf(l.traceErrStr, "", err, float64(elapsed.Nanoseconds())/1e6, "-", sql)
 			} else {
 				WithSeverityError(ctx).Printf(l.traceErrStr, "", err, float64(elapsed.Nanoseconds())/1e6, rows, sql)
 			}
-		case elapsed > l.SlowThreshold && l.SlowThreshold != 0 && l.LogLevel >= glogger.Warn:
+		case elapsed > l.SlowThreshold && l.SlowThreshold != 0 && l.LogLevel >= WarnLevel:
 			sql, rows := fc()
 			slowLog := fmt.Sprintf("SLOW SQL >= %v", l.SlowThreshold)
 			if rows == -1 {
@@ -128,7 +156,7 @@ func (l logger) Trace(ctx context.Context, begin time.Time, fc func() (string, i
 			} else {
 				WithSeverityWarn(ctx).Printf(l.traceWarnStr, "", slowLog, float64(elapsed.Nanoseconds())/1e6, rows, sql)
 			}
-		case l.LogLevel >= glogger.Info:
+		case l.LogLevel >= InfoLevel:
 			sql, rows := fc()
 			if rows == -1 {
 				WithSeverityInfo(ctx).Printf(l.traceStr, "", float64(elapsed.Nanoseconds())/1e6, "-", sql)
@@ -140,7 +168,7 @@ func (l logger) Trace(ctx context.Context, begin time.Time, fc func() (string, i
 }
 
 type traceRecorder struct {
-	glogger.Interface
+	Interface
 	BeginAt      time.Time
 	SQL          string
 	RowsAffected int64

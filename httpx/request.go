@@ -105,7 +105,7 @@ func (r *Request) logRequestInfo(ctx context.Context) {
 	if r.UnlimitLogRequestBody {
 		body = string(r.body)
 	} else {
-		body = logx.LimitMSG(r.body)
+		body = logx.LimitMSGByte(r.body)
 	}
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{

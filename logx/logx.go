@@ -11,7 +11,7 @@ import (
 type Severity string
 
 const (
-	limitMSG = 3000
+	limitMSG = 2500
 
 	severityKey = "severity"
 
@@ -44,11 +44,18 @@ func Init(level, env string) {
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 }
 
-func LimitMSG(b []byte) string {
+func LimitMSGByte(b []byte) string {
 	if limitMSG < len(b) {
 		return string(b[:limitMSG]) + "..."
 	}
 	return string(b)
+}
+
+func LimitMSGString(s string) string {
+	if limitMSG < len(s) {
+		return s[:limitMSG] + "..."
+	}
+	return s
 }
 
 func WithContext(ctx context.Context) logrus.FieldLogger {

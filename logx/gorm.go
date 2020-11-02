@@ -85,6 +85,11 @@ func (l *logger) LogMode(level glogger.LogLevel) glogger.Interface {
 // Info print info
 func (l logger) Info(ctx context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= glogger.Info {
+		for k := range data {
+			if s, ok := data[k].(string); ok {
+				data[k] = LimitMSGString(s)
+			}
+		}
 		WithSeverityInfo(ctx).Infof(msg, data...)
 	}
 }

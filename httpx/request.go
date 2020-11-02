@@ -131,7 +131,7 @@ func (r *Request) logResponseInfo(ctx context.Context, err error, b []byte, dura
 	if r.UnlimitLogResponseBody {
 		body = string(b)
 	} else {
-		body = logx.LimitMSG(b)
+		body = logx.LimitMSGByte(b)
 	}
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{

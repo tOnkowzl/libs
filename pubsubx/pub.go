@@ -44,7 +44,7 @@ func (p *Pub) Publish(ctx context.Context, topicID string, i interface{}) error 
 	logx.WithContext(ctx).WithFields(logrus.Fields{
 		"topicID":   topicID,
 		"projectID": p.ProjectID,
-		"value":     logx.LimitMSG(b),
+		"value":     logx.LimitMSGByte(b),
 	}).Info("pub information")
 
 	pubCtx, cancel := context.WithTimeout(context.Background(), p.Timeout)

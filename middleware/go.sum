@@ -30,8 +30,8 @@ github.com/stretchr/testify v1.4.0 h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJy
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/tOnkowzl/libs/contextx v0.0.2 h1:+rWkZuG1S6kHVL+KNN/3tFXm255GbFDKBYUCiyzSzzU=
 github.com/tOnkowzl/libs/contextx v0.0.2/go.mod h1:LJVWSuNbZ4TI0/8t86Ec1j2iDDmmO1sMzXKXchUTyp4=
-github.com/tOnkowzl/libs/logx v0.0.17 h1:+cN/FQ/jxOm9PgKqi2oq9GZf0c8rkwmzF4o2BuftKB8=
-github.com/tOnkowzl/libs/logx v0.0.17/go.mod h1:8zQ7ZzwuBGPRycVN1hNY33oJ8UGPZtIMjhYI+jvYqxw=
+github.com/tOnkowzl/libs/logx v0.0.20 h1:NSRyA0dovGnSnrJJGXfF+XlJwpbvEBBFor5pRzXuFxc=
+github.com/tOnkowzl/libs/logx v0.0.20/go.mod h1:8zQ7ZzwuBGPRycVN1hNY33oJ8UGPZtIMjhYI+jvYqxw=
 github.com/valyala/bytebufferpool v1.0.0 h1:GqA5TC/0021Y/b9FG4Oi9Mr3q7XYx6KllzawFIhcdPw=
 github.com/valyala/bytebufferpool v1.0.0/go.mod h1:6bBcMArwyJ5K/AmCkWv1jt77kVWyCJ6HpOuEn7z0Csc=
 github.com/valyala/fasttemplate v1.0.1/go.mod h1:UQGH1tvbgY+Nz5t2n7tXsz52dQxojPUpymEIMZ47gx8=

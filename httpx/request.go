@@ -12,15 +12,14 @@ import (
 
 // Request for client do
 type Request struct {
-	URL    string
-	Method string
-	Body   interface{}
-	Header Header
+	URL       string
+	Method    string
+	Body      interface{}
+	Header    Header
+	BasicAuth *BasicAuth
 
-	HideLogRequest         bool
-	HideLogResponse        bool
-	UnlimitLogRequestBody  bool
-	UnlimitLogResponseBody bool
+	HideLogRequest  bool
+	HideLogResponse bool
 
 	fullURL    string
 	body       []byte
@@ -29,14 +28,9 @@ type Request struct {
 
 func (r *Request) init(ctx context.Context, baseURL string) error {
 	r.initFullURL(baseURL)
-	r.newMarshaller()
 	r.initRequireHeaders(ctx)
-
-	if err := r.marshalBody(); err != nil {
-		return err
-	}
-
-	return nil
+	r.newMarshaller()
+	return r.marshalBody()
 }
 
 func (r *Request) marshalBody() error {
@@ -44,17 +38,21 @@ func (r *Request) marshalBody() error {
 		return nil
 	}
 
-	if s, ok := r.Body.(string); ok {
-		r.body = []byte(s)
+	switch v := r.Body.(type) {
+	case string:
+		r.body = []byte(v)
 		return nil
-	}
+	case []byte:
+		r.body = v
+		return nil
+	default:
+		b, err := r.marshaller.Marshal(r.Body)
+		if err != nil {
+			return err
+		}
 
-	b, err := r.marshaller.Marshal(r.Body)
-	if err != nil {
-		return err
+		r.body = b
 	}
-
-	r.body = b
 
 	return nil
 }
@@ -65,8 +63,7 @@ func (r *Request) newMarshaller() {
 		return
 	}
 
-	if strings.ToLower(r.Header[ContentType]) == ApplicationXML ||
-		strings.ToLower(r.Header[ContentType]) == TextXML {
+	if strings.ToLower(r.Header[ContentType]) == ApplicationXML || strings.ToLower(r.Header[ContentType]) == TextXML {
 		r.marshaller = new(XML)
 		return
 	}
@@ -101,17 +98,10 @@ func (r *Request) logRequestInfo(ctx context.Context) {
 		return
 	}
 
-	var body string
-	if r.UnlimitLogRequestBody {
-		body = string(r.body)
-	} else {
-		body = logx.LimitMSGByte(r.body)
-	}
-
 	logx.WithContext(ctx).WithFields(logrus.Fields{
 		"method": r.Method,
 		"url":    r.fullURL,
-		"body":   body,
+		"body":   logx.LimitMSGByte(r.body),
 		"header": r.Header,
 	}).Info("client do request information")
 }
@@ -120,26 +110,28 @@ func (r *Request) logResponseInfo(ctx context.Context, err error, b []byte, dura
 	if r.HideLogResponse {
 		return
 	}
-	if b == nil {
-		b = []byte{}
-	}
-	if res == nil {
-		res = &http.Response{}
-	}
 
-	var body string
-	if r.UnlimitLogResponseBody {
-		body = string(b)
-	} else {
-		body = logx.LimitMSGByte(b)
+	var (
+		status string
+		header http.Header
+	)
+	if res != nil {
+		status = res.Status
+		header = res.Header
 	}
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{
 		"duration": duration,
-		"status":   res.Status,
-		"header":   res.Header,
-		"body":     body,
+		"status":   status,
+		"header":   header,
+		"body":     logx.LimitMSGByte(b),
 		"error":    err,
 		"url":      r.fullURL,
 	}).Info("client do response information")
+}
+
+// BasicAuth holding username and password for set in *http.Request
+type BasicAuth struct {
+	Username string
+	Password string
 }

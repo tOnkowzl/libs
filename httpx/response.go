@@ -22,10 +22,6 @@ func (r *Response) IsNotOK() bool {
 }
 
 // Unmarshal data into v
-// output:
-//  - ErrResponseNil when Response is nil
-//  - ErrResponseNilBody when Response Body is nil
-//  - Other error when read body or unmarshal by marshaller
 func (r *Response) Unmarshal(v interface{}) error {
 	return r.Marshaller.Unmarshal(r.Body, v)
 }

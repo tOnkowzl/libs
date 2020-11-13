@@ -10,7 +10,6 @@ import (
 )
 
 type Client struct {
-	BasicAuth  BasicAuth
 	HTTPClient *http.Client
 	BaseURL    string
 }
@@ -28,7 +27,6 @@ func NewClient(conf ClientConfig) (*Client, error) {
 	}
 
 	return &Client{
-		BasicAuth:  conf.BasicAuth,
 		HTTPClient: conf.HTTPClient,
 		BaseURL:    conf.BaseURL,
 	}, nil
@@ -48,11 +46,11 @@ func (c *Client) Do(ctx context.Context, req *Request) (*Response, error) {
 
 	start := time.Now()
 	res, err := c.HTTPClient.Do(httpReq)
+	duration := time.Since(start).String()
 	if err != nil {
-		req.logResponseInfo(ctx, err, nil, "", nil)
+		req.logResponseInfo(ctx, err, nil, duration, nil)
 		return nil, err
 	}
-	duration := time.Since(start).String()
 
 	defer res.Body.Close()
 
@@ -81,8 +79,8 @@ func (c *Client) makeHTTPRequest(req *Request) (*http.Request, error) {
 		httpReq.Header.Set(k, v)
 	}
 
-	if c.BasicAuth.HasBasicAuth() {
-		httpReq.SetBasicAuth(c.BasicAuth.Username, c.BasicAuth.Password)
+	if req.BasicAuth != nil {
+		httpReq.SetBasicAuth(req.BasicAuth.Username, req.BasicAuth.Password)
 	}
 
 	return httpReq, nil

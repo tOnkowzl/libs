@@ -41,20 +41,20 @@ func (p *Pub) Publish(ctx context.Context, topicID string, i interface{}) error 
 		return errors.WithStack(err)
 	}
 
-	logx.WithContext(ctx).WithFields(logrus.Fields{
-		"topicID":   topicID,
-		"projectID": p.ProjectID,
-		"value":     logx.LimitMSGByte(b),
-	}).Info("pub information")
-
 	pubCtx, cancel := context.WithTimeout(context.Background(), p.Timeout)
 	defer cancel()
 
 	topic := p.Client.Topic(topicID)
 
-	if _, err = topic.Publish(pubCtx, &pubsub.Message{Data: b}).Get(pubCtx); err != nil {
-		return errors.WithStack(err)
-	}
+	start := time.Now()
+	_, err = topic.Publish(pubCtx, &pubsub.Message{Data: b}).Get(pubCtx)
 
-	return nil
+	logx.WithContext(ctx).WithFields(logrus.Fields{
+		"topicID":   topicID,
+		"projectID": p.ProjectID,
+		"value":     logx.LimitMSGByte(b),
+		"duration":  time.Since(start).String(),
+	}).Info("pub information")
+
+	return errors.WithStack(err)
 }

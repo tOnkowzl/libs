@@ -22,11 +22,13 @@ func NewClient(opt *redis.Options) *Client {
 }
 
 func (c *Client) Get(ctx context.Context, key string) *Bind {
+	start := time.Now()
 	res, err := c.client.Get(ctx, key).Result()
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{
-		"key":   key,
-		"value": res,
+		"key":      key,
+		"value":    res,
+		"duration": time.Since(start).String(),
 	}).Info("redis get information")
 
 	return &Bind{
@@ -36,16 +38,16 @@ func (c *Client) Get(ctx context.Context, key string) *Bind {
 }
 
 func (c *Client) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
+	start := time.Now()
+	err := c.client.Set(ctx, key, value, expiration).Err()
+
 	logx.WithContext(ctx).WithFields(logrus.Fields{
-		"key":   key,
-		"value": value,
+		"key":      key,
+		"value":    value,
+		"duration": time.Since(start).String(),
 	}).Info("redis set information")
 
-	if err := c.client.Set(ctx, key, value, expiration).Err(); err != nil {
-		return errors.WithStack(err)
-	}
-
-	return nil
+	return errors.WithStack(err)
 }
 
 type Bind struct {

@@ -3,6 +3,7 @@ package saramax
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/Shopify/sarama"
 	"github.com/pkg/errors"
@@ -36,16 +37,18 @@ func (p *Produce) Produce(ctx context.Context, topic string, i interface{}) erro
 		return errors.WithStack(err)
 	}
 
+	start := time.Now()
 	partition, offset, err := p.SyncProducer.SendMessage(&sarama.ProducerMessage{
 		Topic: topic,
 		Value: sarama.ByteEncoder(b),
 	})
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{
-		"value":     logx.LimitMSG(b),
+		"value":     logx.LimitMSGByte(b),
 		"topic":     topic,
 		"partition": partition,
 		"offset":    offset,
+		"duration":  time.Since(start).String(),
 	}).Info("produce information")
 
 	return errors.WithStack(err)

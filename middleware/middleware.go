@@ -24,9 +24,6 @@ var (
 	DefaultSkipper = func(c echo.Context) bool {
 		return c.Path() == "/health"
 	}
-
-	UnlimitLogRequestBody  bool
-	UnlimitLogResponseBody bool
 )
 
 // Skipper skip middleware
@@ -113,16 +110,9 @@ func Logger() echo.MiddlewareFunc {
 			}
 			req.Body = ioutil.NopCloser(bytes.NewBuffer(b))
 
-			var body string
-			if UnlimitLogRequestBody {
-				body = string(b)
-			} else {
-				body = logx.LimitMSGByte(b)
-			}
-
 			logx.WithContext(ctx).WithFields(logrus.Fields{
 				"header": req.Header,
-				"body":   body,
+				"body":   logx.LimitMSGByte(b),
 			}).Info("echo request information")
 
 			resBody := new(bytes.Buffer)
@@ -135,17 +125,9 @@ func Logger() echo.MiddlewareFunc {
 				c.Error(err)
 			}
 
-			b = resBody.Bytes()
-
-			if UnlimitLogResponseBody {
-				body = string(b)
-			} else {
-				body = logx.LimitMSGByte(b)
-			}
-
 			logx.WithContext(ctx).WithFields(logrus.Fields{
 				"header":    res.Header(),
-				"body":      body,
+				"body":      logx.LimitMSGByte(resBody.Bytes()),
 				"method":    req.Method,
 				"host":      req.Host,
 				"path_uri":  req.RequestURI,

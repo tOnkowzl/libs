@@ -179,8 +179,8 @@ github.com/subosito/gotenv v1.2.0 h1:Slr1R9HxAlEKefgq5jn9U+DnETlIUa6HfgEzj0g5d7s
 github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69rRypqCw=
 github.com/tOnkowzl/libs/contextx v0.0.2 h1:+rWkZuG1S6kHVL+KNN/3tFXm255GbFDKBYUCiyzSzzU=
 github.com/tOnkowzl/libs/contextx v0.0.2/go.mod h1:LJVWSuNbZ4TI0/8t86Ec1j2iDDmmO1sMzXKXchUTyp4=
-github.com/tOnkowzl/libs/logx v0.0.21 h1:gm1lDMdxC02M8YDZTovRcZkr2b6JmBSbDdChn0UfMPA=
-github.com/tOnkowzl/libs/logx v0.0.21/go.mod h1:Yd7fL6e2utX+M3W3IOOiLwH0bcqTHksgQIFgBfmqJ1Y=
+github.com/tOnkowzl/libs/logx v0.0.22 h1:KNSjeBIXYMq6KPIzzowuWleE9xLOtpP7JvxQ+Fz62Uo=
+github.com/tOnkowzl/libs/logx v0.0.22/go.mod h1:RtFVXLcFl+MyES6EBFT+TmxkedFShTbC71s8VvgLirw=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
@@ -306,8 +306,8 @@ gopkg.in/yaml.v2 v2.0.0-20170812160011-eb3733d160e7/go.mod h1:JAlM8MvJe8wmxCU4Bl
 gopkg.in/yaml.v2 v2.2.1/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 gopkg.in/yaml.v2 v2.2.4 h1:/eiJrUcujPVeJ3xlSWaiNi3uSVmDGBK1pDHUHAnao1I=
 gopkg.in/yaml.v2 v2.2.4/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
-gorm.io/gorm v1.20.6 h1:qa7tC1WcU+DBI/ZKMxvXy1FcrlGsvxlaKufHrT2qQ08=
-gorm.io/gorm v1.20.6/go.mod h1:0HFTzE/SqkGTzK6TlDPPQbAYCluiVvhzoA1+aVyzenw=
+gorm.io/gorm v1.20.7 h1:rMS4CL3pNmYq1V5/X+nHHjh1Dx6dnf27+Cai5zabo+M=
+gorm.io/gorm v1.20.7/go.mod h1:0HFTzE/SqkGTzK6TlDPPQbAYCluiVvhzoA1+aVyzenw=
 honnef.co/go/tools v0.0.0-20190102054323-c2f93a96b099/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
 honnef.co/go/tools v0.0.0-20190106161140-3f1c8253044a/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
 honnef.co/go/tools v0.0.0-20190418001031-e561f6794a2a/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=

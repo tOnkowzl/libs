@@ -11,7 +11,7 @@ import (
 type Severity string
 
 const (
-	limitMSG = 2000
+	LimitMSG = 10000
 
 	severityKey = "severity"
 
@@ -45,15 +45,15 @@ func Init(level, env string) {
 }
 
 func LimitMSGByte(b []byte) string {
-	if limitMSG < len(b) {
-		return string(b[:limitMSG]) + "..."
+	if LimitMSG < len(b) {
+		return string(b[:LimitMSG]) + "..."
 	}
 	return string(b)
 }
 
 func LimitMSGString(s string) string {
-	if limitMSG < len(s) {
-		return s[:limitMSG] + "..."
+	if LimitMSG < len(s) {
+		return s[:LimitMSG] + "..."
 	}
 	return s
 }

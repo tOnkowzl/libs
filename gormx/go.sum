@@ -13,8 +13,8 @@ github.com/stretchr/testify v1.2.2 h1:bSDNvY7ZPG5RlJ8otE/7V6gMiyenm9RtJ7IUVIAoJ1
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
 github.com/tOnkowzl/libs/contextx v0.0.2 h1:+rWkZuG1S6kHVL+KNN/3tFXm255GbFDKBYUCiyzSzzU=
 github.com/tOnkowzl/libs/contextx v0.0.2/go.mod h1:LJVWSuNbZ4TI0/8t86Ec1j2iDDmmO1sMzXKXchUTyp4=
-github.com/tOnkowzl/libs/logx v0.0.23 h1:A30U4gbcYbaqB+2SWvSvkag+GyxgSoA9XrO25/YQRCE=
-github.com/tOnkowzl/libs/logx v0.0.23/go.mod h1:zGPn6ucl5gZMrUqH1LyF88oDvnQZ77EittW2BQZZnuM=
+github.com/tOnkowzl/libs/logx v0.0.24 h1:1kEoXq3sXPN90/xoN39s+O88SIR+/7NuxguOqqA82V8=
+github.com/tOnkowzl/libs/logx v0.0.24/go.mod h1:zGPn6ucl5gZMrUqH1LyF88oDvnQZ77EittW2BQZZnuM=
 golang.org/x/sys v0.0.0-20191026070338-33540a1f6037 h1:YyJpGZS1sBuBCzLAR1VEpK193GlqGZbnPFnPV/5Rsb4=
 golang.org/x/sys v0.0.0-20191026070338-33540a1f6037/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 gorm.io/gorm v1.20.7 h1:rMS4CL3pNmYq1V5/X+nHHjh1Dx6dnf27+Cai5zabo+M=

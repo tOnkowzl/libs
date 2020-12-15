@@ -47,13 +47,14 @@ func (p *Pub) Publish(ctx context.Context, topicID string, i interface{}) error 
 	topic := p.Client.Topic(topicID)
 
 	start := time.Now()
-	_, err = topic.Publish(pubCtx, &pubsub.Message{Data: b}).Get(pubCtx)
+	serverID, err := topic.Publish(pubCtx, &pubsub.Message{Data: b}).Get(pubCtx)
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{
 		"topicID":   topicID,
 		"projectID": p.ProjectID,
 		"value":     logx.LimitMSGByte(b),
 		"duration":  time.Since(start).String(),
+		"serverID":  serverID,
 	}).Info("pub information")
 
 	return errors.WithStack(err)

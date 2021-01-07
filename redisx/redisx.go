@@ -23,17 +23,17 @@ func NewClient(opt *redis.Options) *Client {
 
 func (c *Client) Get(ctx context.Context, key string) *Bind {
 	start := time.Now()
-	res, err := c.client.Get(ctx, key).Result()
+	val, err := c.client.Get(ctx, key).Result()
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{
 		"key":      key,
-		"value":    res,
+		"value":    val,
 		"duration": time.Since(start).String(),
 	}).Info("redis get information")
 
 	return &Bind{
-		Result: res,
-		Err:    errors.WithStack(err),
+		Val: val,
+		Err: errors.WithStack(err),
 	}
 }
 
@@ -50,9 +50,50 @@ func (c *Client) Set(ctx context.Context, key string, value interface{}, expirat
 	return errors.WithStack(err)
 }
 
+func (c *Client) HSet(ctx context.Context, key string, values ...interface{}) error {
+	start := time.Now()
+	err := c.client.HSet(ctx, key, values...).Err()
+
+	logx.WithContext(ctx).WithFields(logrus.Fields{
+		"key":      key,
+		"values":   values,
+		"duration": time.Since(start).String(),
+	}).Info("redis hset information")
+
+	return errors.WithStack(err)
+}
+
+func (c *Client) HGet(ctx context.Context, key, field string) *Bind {
+	start := time.Now()
+	val, err := c.client.HGet(ctx, key, field).Result()
+
+	logx.WithContext(ctx).WithFields(logrus.Fields{
+		"key":      key,
+		"value":    val,
+		"duration": time.Since(start).String(),
+	}).Info("redis get information")
+
+	return &Bind{
+		Val: val,
+		Err: errors.WithStack(err),
+	}
+}
+
+func (c *Client) Del(ctx context.Context, keys ...string) error {
+	start := time.Now()
+	err := c.client.Del(ctx, keys...).Err()
+
+	logx.WithContext(ctx).WithFields(logrus.Fields{
+		"keys":     keys,
+		"duration": time.Since(start).String(),
+	}).Info("redis hset information")
+
+	return errors.WithStack(err)
+}
+
 type Bind struct {
-	Result string
-	Err    error
+	Val string
+	Err error
 }
 
 func (b *Bind) Bind(i interface{}) error {
@@ -60,6 +101,6 @@ func (b *Bind) Bind(i interface{}) error {
 		return b.Err
 	}
 
-	err := json.Unmarshal([]byte(b.Result), i)
+	err := json.Unmarshal([]byte(b.Val), i)
 	return errors.WithStack(err)
 }

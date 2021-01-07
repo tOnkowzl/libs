@@ -71,7 +71,7 @@ func (c *Client) HGet(ctx context.Context, key, field string) *Bind {
 		"key":      key,
 		"value":    val,
 		"duration": time.Since(start).String(),
-	}).Info("redis get information")
+	}).Info("redis hget information")
 
 	return &Bind{
 		Val: val,
@@ -86,7 +86,7 @@ func (c *Client) Del(ctx context.Context, keys ...string) error {
 	logx.WithContext(ctx).WithFields(logrus.Fields{
 		"keys":     keys,
 		"duration": time.Since(start).String(),
-	}).Info("redis hset information")
+	}).Info("redis del information")
 
 	return errors.WithStack(err)
 }

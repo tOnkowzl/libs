@@ -55,8 +55,8 @@ func (c *Client) HSet(ctx context.Context, key string, values ...interface{}) er
 	err := c.client.HSet(ctx, key, values...).Err()
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{
-		"key":      key,
-		"values":   values,
+		"key": key,
+		// "values":   values,
 		"duration": time.Since(start).String(),
 	}).Info("redis hset information")
 

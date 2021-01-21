@@ -50,13 +50,24 @@ func (c *Client) Set(ctx context.Context, key string, value interface{}, expirat
 	return errors.WithStack(err)
 }
 
+func (c *Client) Del(ctx context.Context, keys ...string) error {
+	start := time.Now()
+	err := c.client.Del(ctx, keys...).Err()
+
+	logx.WithContext(ctx).WithFields(logrus.Fields{
+		"keys":     keys,
+		"duration": time.Since(start).String(),
+	}).Info("redis del information")
+
+	return errors.WithStack(err)
+}
+
 func (c *Client) HSet(ctx context.Context, key string, values ...interface{}) error {
 	start := time.Now()
 	err := c.client.HSet(ctx, key, values...).Err()
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{
-		"key": key,
-		// "values":   values,
+		"key":      key,
 		"duration": time.Since(start).String(),
 	}).Info("redis hset information")
 
@@ -79,14 +90,14 @@ func (c *Client) HGet(ctx context.Context, key, field string) *Bind {
 	}
 }
 
-func (c *Client) Del(ctx context.Context, keys ...string) error {
+func (c *Client) HDel(ctx context.Context, key string, fields ...string) error {
 	start := time.Now()
-	err := c.client.Del(ctx, keys...).Err()
+	err := c.client.HDel(ctx, key, fields...).Err()
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{
-		"keys":     keys,
+		"key":      key,
 		"duration": time.Since(start).String(),
-	}).Info("redis del information")
+	}).Info("redis hdel information")
 
 	return errors.WithStack(err)
 }

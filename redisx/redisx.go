@@ -12,18 +12,18 @@ import (
 )
 
 type Client struct {
-	client *redis.Client
+	*redis.Client
 }
 
 func NewClient(opt *redis.Options) *Client {
 	return &Client{
-		client: redis.NewClient(opt),
+		redis.NewClient(opt),
 	}
 }
 
 func (c *Client) Get(ctx context.Context, key string) *Bind {
 	start := time.Now()
-	val, err := c.client.Get(ctx, key).Result()
+	val, err := c.Client.Get(ctx, key).Result()
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{
 		"key":      key,
@@ -39,7 +39,7 @@ func (c *Client) Get(ctx context.Context, key string) *Bind {
 
 func (c *Client) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
 	start := time.Now()
-	err := c.client.Set(ctx, key, value, expiration).Err()
+	err := c.Client.Set(ctx, key, value, expiration).Err()
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{
 		"key":      key,
@@ -52,7 +52,7 @@ func (c *Client) Set(ctx context.Context, key string, value interface{}, expirat
 
 func (c *Client) Del(ctx context.Context, keys ...string) error {
 	start := time.Now()
-	err := c.client.Del(ctx, keys...).Err()
+	err := c.Client.Del(ctx, keys...).Err()
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{
 		"keys":     keys,
@@ -64,7 +64,7 @@ func (c *Client) Del(ctx context.Context, keys ...string) error {
 
 func (c *Client) HSet(ctx context.Context, key string, values ...interface{}) error {
 	start := time.Now()
-	err := c.client.HSet(ctx, key, values...).Err()
+	err := c.Client.HSet(ctx, key, values...).Err()
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{
 		"key":      key,
@@ -76,7 +76,7 @@ func (c *Client) HSet(ctx context.Context, key string, values ...interface{}) er
 
 func (c *Client) HGet(ctx context.Context, key, field string) *Bind {
 	start := time.Now()
-	val, err := c.client.HGet(ctx, key, field).Result()
+	val, err := c.Client.HGet(ctx, key, field).Result()
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{
 		"key":      key,
@@ -90,14 +90,40 @@ func (c *Client) HGet(ctx context.Context, key, field string) *Bind {
 	}
 }
 
+func (c *Client) HGetAll(ctx context.Context, key string) *redis.StringStringMapCmd {
+	start := time.Now()
+	cmd := c.Client.HGetAll(ctx, key)
+
+	logx.WithContext(ctx).WithFields(logrus.Fields{
+		"key":      key,
+		"value":    cmd.Val(),
+		"duration": time.Since(start).String(),
+	}).Info("redis hgetall information")
+
+	return cmd
+}
+
 func (c *Client) HDel(ctx context.Context, key string, fields ...string) error {
 	start := time.Now()
-	err := c.client.HDel(ctx, key, fields...).Err()
+	err := c.Client.HDel(ctx, key, fields...).Err()
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{
 		"key":      key,
 		"duration": time.Since(start).String(),
 	}).Info("redis hdel information")
+
+	return errors.WithStack(err)
+}
+
+func (c *Client) GetSet(ctx context.Context, key string, value interface{}) error {
+	start := time.Now()
+	err := c.Client.GetSet(ctx, key, value).Err()
+
+	logx.WithContext(ctx).WithFields(logrus.Fields{
+		"key":      key,
+		"values":   value,
+		"duration": time.Since(start).String(),
+	}).Info("redis getset information")
 
 	return errors.WithStack(err)
 }

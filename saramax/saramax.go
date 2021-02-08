@@ -37,6 +37,14 @@ func (p *Produce) Produce(ctx context.Context, topic string, i interface{}) erro
 		return errors.WithStack(err)
 	}
 
+	return p.produce(ctx, topic, b)
+}
+
+func (p *Produce) ProduceNoMarshal(ctx context.Context, topic string, b []byte) error {
+	return p.produce(ctx, topic, b)
+}
+
+func (p *Produce) produce(ctx context.Context, topic string, b []byte) error {
 	start := time.Now()
 	partition, offset, err := p.SyncProducer.SendMessage(&sarama.ProducerMessage{
 		Topic: topic,

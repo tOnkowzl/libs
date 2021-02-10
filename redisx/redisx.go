@@ -115,17 +115,21 @@ func (c *Client) HDel(ctx context.Context, key string, fields ...string) error {
 	return errors.WithStack(err)
 }
 
-func (c *Client) GetSet(ctx context.Context, key string, value interface{}) error {
+func (c *Client) GetSet(ctx context.Context, key string, value interface{}) *Bind {
 	start := time.Now()
-	err := c.Client.GetSet(ctx, key, value).Err()
+	val, err := c.Client.GetSet(ctx, key, value).Result()
 
 	logx.WithContext(ctx).WithFields(logrus.Fields{
 		"key":      key,
-		"values":   value,
+		"setValue": value,
+		"getValue": val,
 		"duration": time.Since(start).String(),
 	}).Info("redis getset information")
 
-	return errors.WithStack(err)
+	return &Bind{
+		Val: val,
+		Err: errors.WithStack(err),
+	}
 }
 
 type Bind struct {

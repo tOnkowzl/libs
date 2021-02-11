@@ -6,5 +6,5 @@ require (
 	github.com/go-redis/redis/v8 v8.5.0
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.7.0
-	github.com/tOnkowzl/libs/logx v0.0.25
+	github.com/tOnkowzl/libs/logx v0.0.26
 )

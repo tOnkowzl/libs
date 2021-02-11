@@ -11,8 +11,6 @@ import (
 type Severity string
 
 const (
-	LimitMSG = 10000
-
 	severityKey = "severity"
 
 	SeverityInfo      Severity = "INFO"
@@ -20,6 +18,10 @@ const (
 	SeverityWarn      Severity = "WARNING"
 	SeverityError     Severity = "ERROR"
 	SeverityEmergency Severity = "EMERGENCY"
+)
+
+var (
+	LimitMSG = 10000
 )
 
 func StandardLogger() *logrus.Logger {

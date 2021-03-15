@@ -125,15 +125,17 @@ func Logger() echo.MiddlewareFunc {
 				c.Error(err)
 			}
 
+			duration := time.Since(start)
 			logx.WithContext(ctx).WithFields(logrus.Fields{
-				"header":    res.Header(),
-				"body":      logx.LimitMSGByte(resBody.Bytes()),
-				"method":    req.Method,
-				"host":      req.Host,
-				"path_uri":  req.RequestURI,
-				"remote_ip": c.RealIP(),
-				"status":    res.Status,
-				"duration":  time.Since(start).String(),
+				"header":          res.Header(),
+				"body":            logx.LimitMSGByte(resBody.Bytes()),
+				"method":          req.Method,
+				"host":            req.Host,
+				"path_uri":        req.RequestURI,
+				"remote_ip":       c.RealIP(),
+				"status":          res.Status,
+				"duration_string": duration.String(),
+				"duration":        duration,
 			}).Info("echo response information")
 
 			return nil

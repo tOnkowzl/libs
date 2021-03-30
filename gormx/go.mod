@@ -4,5 +4,5 @@ go 1.15
 
 require (
 	github.com/tOnkowzl/libs/logx v0.0.28
-	gorm.io/gorm v1.21.5
+	gorm.io/gorm v1.21.6
 )

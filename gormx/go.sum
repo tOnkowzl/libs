@@ -17,5 +17,5 @@ github.com/tOnkowzl/libs/logx v0.0.28 h1:Q0v1mLiwpgMvus6oHAa4OAawu+B36DsesA5rp4H
 github.com/tOnkowzl/libs/logx v0.0.28/go.mod h1:HoMqJLiptk7tTWc2H2vlisC3DJuoUMk5l9fQEa3kl1k=
 golang.org/x/sys v0.0.0-20191026070338-33540a1f6037 h1:YyJpGZS1sBuBCzLAR1VEpK193GlqGZbnPFnPV/5Rsb4=
 golang.org/x/sys v0.0.0-20191026070338-33540a1f6037/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
-gorm.io/gorm v1.21.6 h1:xEFbH7WShsnAM+HeRNv7lOeyqmDAK+dDnf1AMf/cVPQ=
-gorm.io/gorm v1.21.6/go.mod h1:F+OptMscr0P2F2qU97WT1WimdH9GaQPoDW7AYd5i2Y0=
+gorm.io/gorm v1.21.9 h1:INieZtn4P2Pw6xPJ8MzT0G4WUOsHq3RhfuDF1M6GW0E=
+gorm.io/gorm v1.21.9/go.mod h1:F+OptMscr0P2F2qU97WT1WimdH9GaQPoDW7AYd5i2Y0=
